@@ -40,7 +40,9 @@ In your section page or article page::
 
    {% load poll_votings %}
 
-   {% has_questions self as questions %}
-   {% if questions %}
+   {% block content %}
+    {% has_questions self as questions %}
+    {% if questions %}
       {% poll_page_in_section page=self %}
-   {% endif %}
+    {% endif %}
+   {% endblock %}
