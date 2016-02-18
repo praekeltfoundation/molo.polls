@@ -13,6 +13,7 @@ Molo polls
     :target: http://badge.fury.io/py/molo.polls
     :alt: Pypi Package
 
+
 A molo module that provides the ability to run polls and surveys.
 
 Installation::
