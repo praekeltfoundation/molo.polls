@@ -1,0 +1,3 @@
+[run]
+omit = molo/polls/migrations/*
+source= molo/polls/
