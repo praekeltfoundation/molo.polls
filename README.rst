@@ -9,6 +9,10 @@ Molo polls
     :target: https://coveralls.io/r/praekelt/molo.polls?branch=develop
     :alt: Code Coverage
 
+.. image:: https://badge.fury.io/py/molo.polls.svg
+    :target: http://badge.fury.io/py/molo.polls
+    :alt: Pypi Package
+
 A molo module that provides the ability to run polls and surveys.
 
 Installation::
