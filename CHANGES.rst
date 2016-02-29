@@ -1,5 +1,8 @@
 CHANGE LOG
 ==========
+1.0.1
+-----
+- Fixed the issue with not previewing a question page in wagtail 
 
 1.0.0
 -----
