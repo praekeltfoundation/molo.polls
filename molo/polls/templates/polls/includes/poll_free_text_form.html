@@ -14,7 +14,7 @@
       <br>
       <input type="submit" value="{% trans "Submit" %}" />
     {% else %}
-      <p>{% trans "Thank you! Your repsonse has already been submitted." %}<p>
+      <p>{% trans "Thank you! Your response has already been submitted." %}<p>
     {% endif %}
   {% else %}
       <a href="{% url 'molo.profiles:auth_login' %}?next={{request.path}}">{% trans "Log in to vote" %}</a>
