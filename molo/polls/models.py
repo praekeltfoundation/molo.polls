@@ -2,16 +2,17 @@ from django.db import models
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailadmin.edit_handlers import (
     FieldPanel, MultiFieldPanel, FieldRowPanel)
-from molo.core.models import LanguagePage, ArticlePage, SectionPage
+from molo.core.models import (
+    Main, ArticlePage, SectionPage, TranslatablePageMixin)
 from django.utils.translation import ugettext_lazy as _
 
 
-LanguagePage.subpage_types += ['polls.Question', 'polls.FreeTextQuestion']
+Main.subpage_types += ['polls.Question', 'polls.FreeTextQuestion']
 SectionPage.subpage_types += ['polls.Question', 'polls.FreeTextQuestion']
 ArticlePage.subpage_types += ['polls.Question', 'polls.FreeTextQuestion']
 
 
-class Question(Page):
+class Question(TranslatablePageMixin, Page):
     subpage_types = ['polls.Choice']
     short_name = models.TextField(
         null=True, blank=True,
@@ -108,7 +109,7 @@ class FreeTextQuestion(Question):
             user=user, question__id=self.id).exists())
 
 
-class Choice(Page):
+class Choice(TranslatablePageMixin, Page):
     subpage_types = []
     votes = models.IntegerField(default=0)
     choice_votes = models.ManyToManyField('ChoiceVote',

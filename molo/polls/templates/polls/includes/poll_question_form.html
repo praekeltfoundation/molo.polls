@@ -4,8 +4,9 @@
 <form action="{% url 'molo.polls:vote' question.id %}" method="post">
   {% csrf_token %}
   <div>
+    {% load_choices_for_poll_page question as choices %}
     {% if not request.user.is_authenticated%}
-      {% for choice in question.choices %}
+      {% for choice in choices %}
         <div>
           {% if question.allow_multiple_choice%}
             <input type="checkbox" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
@@ -19,9 +20,9 @@
     {% elif request.user.is_authenticated %}
       {% can_vote question as user_can_vote %}
       {% if user_can_vote %}
-        {% for choice in question.choices %}
+        {% for choice in choices %}
           <div>
-            {% if question.allow_multiple_choice%}
+            {% if question.allow_multiple_choice %}
               <input type="checkbox" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
               <label for="choice{{ forloop.counter }}">{{ choice.title }}</label>
             {% else %}

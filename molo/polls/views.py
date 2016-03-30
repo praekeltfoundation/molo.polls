@@ -7,6 +7,8 @@ from molo.polls.models import (
 from django .db.models import F
 from django.views.generic.edit import FormView
 from molo.polls.forms import TextVoteForm, VoteForm, NumericalTextVoteForm
+from django.utils.translation import get_language_from_request
+from molo.core.utils import get_locale_code
 
 
 class IndexView(generic.ListView):
@@ -25,7 +27,11 @@ class DetailView(generic.DetailView):
 
 def poll_results(request, poll_id):
     question = get_object_or_404(Question, pk=poll_id)
-    choices = list(question.choices())
+    page = question.get_main_language_page()
+    qs = Choice.objects.live().child_of(page).filter(
+        languages__language__is_main_language=True)
+    locale = get_locale_code(get_language_from_request(request))
+    choices = [a.get_translation_for(locale) or a for a in qs]
     total_votes = sum(c.votes for c in choices)
     choice_color = ['orange', 'purple', 'turq']
     index = 0
