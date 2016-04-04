@@ -76,9 +76,10 @@ class VoteView(FormView):
         if created:
             selected_choice = form.cleaned_data['choice']
             for choice_pk in selected_choice:
+                Choice.objects.filter(
+                    pk=choice_pk).update(votes=F('votes') + 1)
                 choice = Choice.objects.get(pk=choice_pk)
                 obj.choice.add(choice)
-                choice.votes = F('votes') + 1
                 choice.choice_votes.add(obj)
                 choice.save()
         return HttpResponseRedirect(
