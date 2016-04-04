@@ -9,10 +9,10 @@
       {% for choice in choices %}
         <div>
           {% if question.allow_multiple_choice%}
-            <input type="checkbox" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
+            <input type="checkbox" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.get_mainlanguage_page.id }}" />
             <label for="choice{{ forloop.counter }}">{{ choice.title }}</label>
           {% else %}
-            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
+            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.get_mainlanguage_page.id }}" />
             <label for="choice{{ forloop.counter }}">{{ choice.title }}</label>
           {% endif %}
         </div>
@@ -23,10 +23,10 @@
         {% for choice in choices %}
           <div>
             {% if question.allow_multiple_choice %}
-              <input type="checkbox" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
+              <input type="checkbox" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.get_mainlanguage_page.id }}" />
               <label for="choice{{ forloop.counter }}">{{ choice.title }}</label>
             {% else %}
-              <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
+              <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{choice.get_mainlanguage_page.id}}" />
               <label for="choice{{ forloop.counter }}">{{ choice.title }}</label>
             {% endif %}
           </div>
