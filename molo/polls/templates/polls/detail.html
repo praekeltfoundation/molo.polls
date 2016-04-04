@@ -10,11 +10,11 @@
 			{% load_choices_for_poll_page question as choices %}
 			{% for choice in choices %}
 				{% if question.allow_multiple_choice%}
-					<input type="checkbox" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.get_mainlanguage_page.id }}" />
+					<input type="checkbox" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.get_main_language_page.id }}" />
 					<label for="choice{{ forloop.counter }}">{{ choice.title }}</label>
 					<br>
 				{% else %}
-					<input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.get_mainlanguage_page.id }}" />
+					<input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.get_main_language_page.id }}" />
 					<label for="choice{{ forloop.counter }}">{{ choice.title }}</label>
 					<br>
 				{% endif %}

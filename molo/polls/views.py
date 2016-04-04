@@ -31,16 +31,16 @@ def poll_results(request, poll_id):
     qs = Choice.objects.live().child_of(page).filter(
         languages__language__is_main_language=True)
     locale = get_locale_code(get_language_from_request(request))
-    choices = [a.get_translation_for(locale) or a for a in qs]
+    choices = [(a.get_translation_for(locale) or a, a) for a in qs]
     total_votes = sum(c.votes for c in qs)
     choice_color = ['orange', 'purple', 'turq']
     index = 0
-    for choice in choices:
+    for choice, main_choice in choices:
         vote_percentage = 0
         if index >= len(choice_color):
             index = 0
-        if choice.votes > 0:
-            vote_percentage = int(choice.votes * 100.0 / total_votes)
+        if main_choice.votes > 0:
+            vote_percentage = int(main_choice.votes * 100.0 / total_votes)
         choice.percentage = vote_percentage
         choice.color = choice_color[index]
         index += 1
@@ -48,7 +48,8 @@ def poll_results(request, poll_id):
     context = {
         'question': question,
         'total': total_votes,
-        'choices': sorted(choices, key=lambda x: x.percentage, reverse=True)
+        'choices': sorted(
+            [c for c, m in choices], key=lambda x: x.percentage, reverse=True)
     }
     return render(request, 'polls/results.html', context,)
 
@@ -69,6 +70,7 @@ class VoteView(FormView):
     def form_valid(self, form, *args, **kwargs):
         question_id = self.kwargs.get('question_id')
         question = get_object_or_404(Question, pk=question_id)
+        question = question.get_main_language_page().specific
         obj, created = ChoiceVote.objects.get_or_create(
             user=self.request.user,
             question=question,)
@@ -109,6 +111,7 @@ class FreeTextVoteView(FormView):
     def form_valid(self, form, *args, **kwargs):
         question_id = self.kwargs.get('question_id')
         question = get_object_or_404(FreeTextQuestion, pk=question_id)
+        question = question.get_main_language_page().specific
         FreeTextVote.objects.get_or_create(
             user=self.request.user,
             question=question,

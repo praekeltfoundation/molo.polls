@@ -75,10 +75,11 @@ def can_vote(context, question):
 @register.assignment_tag(takes_context=True)
 def user_choice(context, question):
     request = context['request']
-    choice = question.user_choice(request.user)
-    if choice.all().count() == 1:
-        return choice
+    choices = question.get_main_language_page().specific.user_choice(
+        request.user)
+    if choices.all().count() == 1:
+        return choices.first().title
     else:
-        choice_titles = [c.title for c in choice.all()]
+        choice_titles = [c.title for c in choices.all()]
 
         return ", ".join(choice_titles)

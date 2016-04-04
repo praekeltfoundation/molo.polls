@@ -55,13 +55,12 @@ class Question(TranslatablePageMixin, Page):
                 "Question Settings",))]
 
     def user_choice(self, user):
-        self.choicevote_set.filter(user=user)
         return ChoiceVote.objects.get(
             user=user, question__id=self.id).choice
 
     def can_vote(self, user):
         return not (ChoiceVote.objects.filter(
-            user=user, question__id=self.id).exists())
+            user=user, question__id=self.get_main_language_page().id).exists())
 
     def choices(self):
         if self.randomise_options:
@@ -106,7 +105,7 @@ class FreeTextQuestion(Question):
 
     def can_vote(self, user):
         return not (FreeTextVote.objects.filter(
-            user=user, question__id=self.id).exists())
+            user=user, question__id=self.get_main_language_page().id).exists())
 
 
 class Choice(TranslatablePageMixin, Page):
