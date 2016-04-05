@@ -1,70 +1,25 @@
-from molo.polls.models import Choice, Question, ChoiceVote
 from django.test import TestCase
-from django.contrib.auth.models import User
-from molo.core.models import LanguagePage, Main, SectionPage
-from django.contrib.contenttypes.models import ContentType
-from wagtail.wagtailcore.models import Site, Page
 from django.test.client import Client
 from django.core.urlresolvers import reverse
 
+from molo.core.models import SiteLanguage, SectionPage
+from molo.core.tests.base import MoloTestCaseMixin
 
-class ModelsTestCase(TestCase):
+from molo.polls.models import Choice, Question, ChoiceVote
+
+
+class ModelsTestCase(MoloTestCaseMixin, TestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(
-            username='tester',
-            email='tester@example.com',
-            password='tester')
-        # Create page content type
-        page_content_type, created = ContentType.objects.get_or_create(
-            model='page',
-            app_label='wagtailcore'
-        )
-
-        # Create root page
-        Page.objects.create(
-            title="Root",
-            slug='root',
-            content_type=page_content_type,
-            path='0001',
-            depth=1,
-            numchild=1,
-            url_path='/',
-        )
-
-        main_content_type, created = ContentType.objects.get_or_create(
-            model='main', app_label='core')
-
-        # Create a new homepage
-        main = Main.objects.create(
-            title="Main",
-            slug='main',
-            content_type=main_content_type,
-            path='00010001',
-            depth=2,
-            numchild=0,
-            url_path='/home/',
-        )
-        main.save_revision().publish()
-
-        self.english = LanguagePage(
-            title='English',
-            code='en',
-            slug='english')
-        main.add_child(instance=self.english)
-        self.english.save_revision().publish()
-
-        # Create a site with the new homepage set as the root
-        Site.objects.all().delete()
-        Site.objects.create(
-            hostname='localhost', root_page=main, is_default_site=True)
+        self.user = self.login()
+        self.mk_main()
+        # Creates Main language
+        self.english = SiteLanguage.objects.create(locale='en')
 
     def test_section_page_question(self):
-        self.english.save_revision().publish()
-
         section = SectionPage(
             title='section', slug='section', extra_style_hints='purple')
-        self.english.add_child(instance=section)
+        self.main.add_child(instance=section)
         section.save_revision().publish()
 
         question = Question(title='is this a test')
@@ -72,11 +27,11 @@ class ModelsTestCase(TestCase):
         question.save_revision().publish()
         # make a vote
         client = Client()
-        client.login(username='tester', password='tester')
+        client.login(username='superuser', password='pass')
         response = client.get('/')
         self.assertContains(response, 'section')
         response = self.client.get(
-            '/english/section/')
+            '/section/')
         self.assertContains(response, "is this a test")
         self.assertEquals(section.get_effective_extra_style_hints(), 'purple')
         self.assertEquals(question.get_effective_extra_style_hints(), 'purple')
@@ -86,11 +41,11 @@ class ModelsTestCase(TestCase):
         choice1 = Choice(title='yes')
         # make a question
         question = Question(title='is this a test')
-        self.english.add_child(instance=question)
+        self.main.add_child(instance=question)
         question.add_child(instance=choice1)
         # make a vote
         client = Client()
-        client.login(username='tester', password='tester')
+        client.login(username='superuser', password='pass')
         client.post(reverse('molo.polls:vote',
                     kwargs={'question_id': question.id}),
                     {'choice': choice1.id})
@@ -107,7 +62,7 @@ class ModelsTestCase(TestCase):
         choice5 = Choice(title='idk')
 
         question = Question(title='is this a test', randomise_options=True)
-        self.english.add_child(instance=question)
+        self.main.add_child(instance=question)
         question.add_child(instance=choice1)
         question.add_child(instance=choice2)
         question.add_child(instance=choice3)
