@@ -6,7 +6,7 @@
   {% if request.user.is_authenticated %}
     {% can_vote question as user_can_vote %}
     {% if user_can_vote %}
-      {% if question.freetextquestion.numerical %}
+      {% if question.freetextquestion.get_main_language_page.numerical %}
         <input type="number" name="answer" id="id_answer" value="" />
       {% else %}
         <input type="text" name="answer" id="id_answer" value="" />
@@ -14,7 +14,7 @@
       <br>
       <input type="submit" value="{% trans "Submit" %}" />
     {% else %}
-      <p>{% trans "Thank you! Your repsonse has already been submitted." %}<p>
+      <p>{% trans "Thank you! Your response has already been submitted." %}<p>
     {% endif %}
   {% else %}
       <a href="{% url 'molo.profiles:auth_login' %}?next={{request.path}}">{% trans "Log in to vote" %}</a>

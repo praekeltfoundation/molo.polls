@@ -5,7 +5,7 @@ from django.http import HttpResponse
 import datetime
 import csv
 
-from molo.polls.models import Question, Choice
+from molo.polls.models import Question, Choice, FreeTextVote
 
 
 class ParentListFilter(admin.SimpleListFilter):
@@ -98,5 +98,13 @@ class ChoiceAdmin(admin.ModelAdmin):
     def _parent(self, obj, *args, **kwargs):
         return obj.get_parent().title
 
+
+class FreeTextVoteAdmin(admin.ModelAdmin):
+    list_display = ('question', 'answer', 'user', 'submission_date')
+    list_filter = ('question', 'submission_date')
+    readonly_fields = ['question', 'answer', 'user', 'submission_date']
+
+
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Choice, ChoiceAdmin)
+admin.site.register(FreeTextVote, FreeTextVoteAdmin)
