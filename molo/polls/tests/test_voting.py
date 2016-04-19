@@ -6,7 +6,7 @@ from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import SiteLanguage
 
 from molo.polls.models import (Choice, Question, ChoiceVote, FreeTextQuestion,
-                               FreeTextVote)
+                               FreeTextVote, PollsIndexPage)
 
 
 class ModelsTestCase(TestCase, MoloTestCaseMixin):
@@ -14,15 +14,19 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
     def setUp(self):
         self.user = self.login()
         self.mk_main()
-        # Creates Main language
+        # Create Main language
         self.english = SiteLanguage.objects.create(locale='en')
+        # Create polls index page
+        self.polls_index = PollsIndexPage(title='Polls', slug='polls')
+        self.main.add_child(instance=self.polls_index)
+        self.polls_index.save_revision().publish()
 
     def test_voting_once_only(self):
         # make choices
         choice1 = Choice(title='yes')
         # make a question
         question = Question(title='is this a test')
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
         question.save_revision().publish()
         # make a vote
@@ -64,7 +68,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         question = Question(
             title='is this a test',
             allow_multiple_choice=True, show_results=False)
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
         question.add_child(instance=choice2)
         question.save_revision().publish()
@@ -90,7 +94,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         # make a question
         question = Question(
             title='is this a test', result_as_percentage=False)
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
         question.save_revision().publish()
         # make a vote
@@ -114,7 +118,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         # make a question
         question = Question(
             title='is this a test', show_results=False)
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
         question.save_revision().publish()
         # make a vote
@@ -135,7 +139,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
     def test_free_text_vote_successful(self):
         question = FreeTextQuestion(
             title='is this a test')
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.save_revision().publish()
 
         client = Client()
@@ -161,7 +165,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
     def test_numerical_text_vote_successful(self):
         question = FreeTextQuestion(
             title='is this a test', numerical=True)
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.save_revision().publish()
 
         client = Client()
@@ -187,7 +191,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
     def test_numerical_text_vote_unsuccessful(self):
         question = FreeTextQuestion(
             title='is this a test', numerical=True)
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.save_revision().publish()
 
         client = Client()
@@ -208,7 +212,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
     def test_free_text_vote_resubmission(self):
         question = FreeTextQuestion(
             title='is this a test')
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.save_revision().publish()
 
         client = Client()
@@ -239,7 +243,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
     def test_numerical_text_vote_resubmission(self):
         question = FreeTextQuestion(
             title='is this a test')
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.save_revision().publish()
 
         client = Client()
@@ -270,7 +274,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
     def test_free_text_vote_blank_answer(self):
         question = FreeTextQuestion(
             title='is this a test')
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.save_revision().publish()
 
         client = Client()
@@ -290,7 +294,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
     def test_numerical_text_vote_blank_answer(self):
         question = FreeTextQuestion(
             title='is this a test')
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.save_revision().publish()
 
         client = Client()

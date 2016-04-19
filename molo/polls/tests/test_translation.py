@@ -5,8 +5,8 @@ from django.core.urlresolvers import reverse
 from molo.core.models import SiteLanguage
 from molo.core.tests.base import MoloTestCaseMixin
 
-from molo.polls.models import (
-    Choice, Question, FreeTextQuestion, FreeTextVote, ChoiceVote)
+from molo.polls.models import (Choice, Question, FreeTextQuestion,
+                               FreeTextVote, ChoiceVote, PollsIndexPage)
 
 
 class ModelsTestCase(MoloTestCaseMixin, TestCase):
@@ -18,13 +18,17 @@ class ModelsTestCase(MoloTestCaseMixin, TestCase):
         self.english = SiteLanguage.objects.create(locale='en')
         # Creates Child language
         self.french = SiteLanguage.objects.create(locale='fr')
+        # Create polls index page
+        self.polls_index = PollsIndexPage(title='Polls', slug='polls')
+        self.main.add_child(instance=self.polls_index)
+        self.polls_index.save_revision().publish()
 
     def test_translated_question_exists(self):
         client = Client()
         client.login(username='superuser', password='pass')
 
         question = Question(title='is this a test')
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.save_revision().publish()
         self.client.post(reverse(
             'add_translation', args=[question.id, 'fr']))
@@ -33,7 +37,7 @@ class ModelsTestCase(MoloTestCaseMixin, TestCase):
         page.save_revision().publish()
 
         response = self.client.get(reverse(
-            'wagtailadmin_explore', args=[self.main.id]))
+            'wagtailadmin_explore', args=[self.polls_index.id]))
         self.assertContains(response,
                             '<a href="/admin/pages/%s/edit/"'
                             % page.id)
@@ -44,7 +48,7 @@ class ModelsTestCase(MoloTestCaseMixin, TestCase):
 
         choice1 = Choice(title='yes')
         question = Question(title='is this a test')
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
         question.save_revision().publish()
         self.client.post(reverse(
@@ -66,7 +70,7 @@ class ModelsTestCase(MoloTestCaseMixin, TestCase):
 
         choice1 = Choice(title='yes')
         question = Question(title='is this a test')
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
         question.save_revision().publish()
         self.client.post(reverse(
@@ -88,7 +92,7 @@ class ModelsTestCase(MoloTestCaseMixin, TestCase):
 
         choice1 = Choice(title='yes')
         question = Question(title='is this a test')
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
         question.save_revision().publish()
         self.client.post(reverse(
@@ -112,7 +116,7 @@ class ModelsTestCase(MoloTestCaseMixin, TestCase):
         client = Client()
         client.login(username='superuser', password='pass')
         question = FreeTextQuestion(title='what is this')
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.save_revision().publish()
         self.client.post(reverse(
             'add_translation', args=[question.id, 'fr']))
@@ -122,7 +126,7 @@ class ModelsTestCase(MoloTestCaseMixin, TestCase):
         page.save_revision().publish()
 
         response = self.client.get(reverse(
-            'wagtailadmin_explore', args=[self.main.id]))
+            'wagtailadmin_explore', args=[self.polls_index.id]))
 
         self.assertContains(response,
                             '<a href="/admin/pages/%s/edit/"'
@@ -132,7 +136,7 @@ class ModelsTestCase(MoloTestCaseMixin, TestCase):
         client = Client()
         client.login(username='superuser', password='pass')
         question = FreeTextQuestion(title='what is this')
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.save_revision().publish()
         self.client.post(reverse(
             'add_translation', args=[question.id, 'fr']))
