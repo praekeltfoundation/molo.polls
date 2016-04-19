@@ -3,16 +3,17 @@ from copy import copy
 
 from django import template
 
-from molo.polls.models import Question, Choice
+from molo.polls.models import Question, Choice, PollsIndexPage
 
 register = template.Library()
 
 
 @register.inclusion_tag('polls/poll_page.html',
                         takes_context=True)
-def poll_page(context, pk=None, page=None):
+def poll_page(context, pk=None):
     context = copy(context)
     locale_code = context.get('locale_code')
+    page = PollsIndexPage.objects.live().all().first()
     if page:
         questions = (
             Question.objects.live().child_of(page).filter(
