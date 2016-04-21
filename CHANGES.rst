@@ -1,6 +1,13 @@
 CHANGE LOG
 ==========
 
+2.0.1
+-----
+
+- Restructured polls to introduce index page  
+
+NOTE: This release is not compatible with molo versions that are less than 3.0
+
 2.0.0
 -----
 
