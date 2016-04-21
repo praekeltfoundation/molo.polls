@@ -13,7 +13,7 @@ register = template.Library()
 def poll_page(context, pk=None):
     context = copy(context)
     locale_code = context.get('locale_code')
-    page = PollsIndexPage.objects.live().all().first()
+    page = PollsIndexPage.objects.live().first()
     if page:
         questions = (
             Question.objects.live().child_of(page).filter(
