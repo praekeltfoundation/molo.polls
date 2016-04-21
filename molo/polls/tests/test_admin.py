@@ -8,7 +8,8 @@ from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import SiteLanguage
 
 from molo.polls.admin import QuestionAdmin, download_as_csv
-from molo.polls.models import (Choice, Question, FreeTextQuestion)
+from molo.polls.models import (Choice, Question, FreeTextQuestion,
+                               PollsIndexPage)
 
 
 class ModelsTestCase(TestCase, MoloTestCaseMixin):
@@ -18,6 +19,10 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         self.mk_main()
         # Creates Main language
         self.english = SiteLanguage.objects.create(locale='en')
+        # Create polls index page
+        self.polls_index = PollsIndexPage(title='Polls', slug='polls')
+        self.main.add_child(instance=self.polls_index)
+        self.polls_index.save_revision().publish()
 
     def test_download_csv_question(self):
         # make choices
@@ -27,7 +32,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         question = Question(
             title='is this a test',
             allow_multiple_choice=True, show_results=False)
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
         question.add_child(instance=choice2)
         question.save_revision().publish()
@@ -60,7 +65,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         question = Question(
             title='is this a test',
             allow_multiple_choice=True, show_results=False)
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
         question.add_child(instance=choice2)
         question.save_revision().publish()
@@ -92,7 +97,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         question = Question(
             title='is this a test',
             allow_multiple_choice=True, show_results=False)
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
         question.save_revision().publish()
         # make a vote
@@ -119,7 +124,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
     def test_download_csv_free_text_question(self):
         question = FreeTextQuestion(
             title='is this a test')
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.save_revision().publish()
 
         client = Client()
@@ -145,7 +150,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
     def test_download_csv_free_text_question_short_name(self):
         question = FreeTextQuestion(
             title='is this a test', short_name='short')
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.save_revision().publish()
 
         client = Client()

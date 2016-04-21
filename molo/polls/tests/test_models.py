@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from molo.core.models import SiteLanguage, SectionPage
 from molo.core.tests.base import MoloTestCaseMixin
 
-from molo.polls.models import Choice, Question, ChoiceVote
+from molo.polls.models import Choice, Question, ChoiceVote, PollsIndexPage
 
 
 class ModelsTestCase(MoloTestCaseMixin, TestCase):
@@ -15,6 +15,10 @@ class ModelsTestCase(MoloTestCaseMixin, TestCase):
         self.mk_main()
         # Creates Main language
         self.english = SiteLanguage.objects.create(locale='en')
+        # Create polls index page
+        self.polls_index = PollsIndexPage(title='Polls', slug='polls')
+        self.main.add_child(instance=self.polls_index)
+        self.polls_index.save_revision().publish()
 
     def test_section_page_question(self):
         section = SectionPage(
@@ -41,7 +45,7 @@ class ModelsTestCase(MoloTestCaseMixin, TestCase):
         choice1 = Choice(title='yes')
         # make a question
         question = Question(title='is this a test')
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
         # make a vote
         client = Client()
@@ -62,7 +66,7 @@ class ModelsTestCase(MoloTestCaseMixin, TestCase):
         choice5 = Choice(title='idk')
 
         question = Question(title='is this a test', randomise_options=True)
-        self.main.add_child(instance=question)
+        self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
         question.add_child(instance=choice2)
         question.add_child(instance=choice3)
