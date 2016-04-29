@@ -1,10 +1,15 @@
 CHANGE LOG
 ==========
 
+2.0.2
+-----
+
+- Changed molo.core version to 3.0rc8
+
 2.0.1
 -----
 
-- Restructured polls to introduce index page  
+- Restructured polls to introduce index page
 
 NOTE: This release is not compatible with molo versions that are less than 3.0
 
