@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+2.0.3
+-----
+
+- pinned molo.core to version 3
+
 2.0.2
 -----
 
