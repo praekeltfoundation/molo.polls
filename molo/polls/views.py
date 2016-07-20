@@ -1,3 +1,6 @@
+import csv
+
+from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -120,3 +123,78 @@ class FreeTextVoteView(FormView):
             })
         return HttpResponseRedirect(reverse('molo.polls:results',
                                             args=(question.id,)))
+
+
+class PollResultView(FormView):
+    def get_context_data(self, **kwargs):
+        kwargs = super(PollResultView, self).get_context_data()
+        kwargs['parent'] = self.kwargs['parent']
+        return kwargs
+
+    def get(self, request, *args, **kwargs):
+        parent = kwargs['parent']
+        question = get_object_or_404(Question, pk=parent)
+        page = question.get_main_language_page()
+
+        choice_vote = Choice.objects.live().child_of(page).filter(
+            languages__language__is_main_language=True)
+
+        free_text_votes = FreeTextVote.objects.filter(question_id=parent)
+
+        results = choice_vote if choice_vote else free_text_votes
+
+        data_rows = []
+        data_headings = []
+
+        def to_dict(instance, include=None):
+            opts = instance._meta
+            data = {}
+            for f in opts.get_fields():
+                if f.name in include:
+                    data[f.name] = f.value_from_object(instance)
+                    if 'user' in data:
+                        data['user'] = instance.user.username
+                    if 'question' in data:
+                        data['question'] = instance.question
+
+            return data
+
+        for result in results:
+            model_data = to_dict(result, include=['question', 'answer',
+                                                  'user', 'submission_date',
+                                                  'title', 'votes'])
+
+            data_rows.append({
+                "fields": model_data.values()
+            })
+
+            data_headings = model_data.keys()
+
+            data_headings = [field.replace('_', ' ') for field
+                             in data_headings]
+
+        context = {
+            'page_title': page.title,
+            'data_headings': data_headings,
+            'data_rows': data_rows
+        }
+
+        if 'CSV' in request.GET:
+            response = HttpResponse(content_type='text/csv')
+            response[
+                'Content-Disposition'] = 'attachment; ' \
+                                         'filename="{0} results.csv"' \
+                .format(page.title)
+
+            writer = csv.writer(response)
+            writer.writerow(data_headings)
+            for item in data_rows:
+                data_row = []
+                form_data = item['fields']
+                for value in form_data:
+                    data_row.append(value)
+                writer.writerow(data_row)
+
+            return response
+
+        return render(request, 'admin/model_admin_results_view.html', context)
