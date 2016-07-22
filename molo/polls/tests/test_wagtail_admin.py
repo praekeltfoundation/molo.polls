@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.core.models import SiteLanguage
 
-from molo.polls.models import (Choice, Question, ChoiceVote, FreeTextQuestion,
+from molo.polls.models import (Choice, Question, FreeTextQuestion,
                                FreeTextVote, PollsIndexPage)
 
 
@@ -82,7 +82,7 @@ class TestAdminUserView(TestCase, MoloTestCaseMixin):
 
         self.assertContains(response, vote.answer)
 
-        #test CSV export
+        # test CSV export
         response = self.client.get(
             '/admin/poll/{0}/results/?CSV'.format(question.id)
         )
