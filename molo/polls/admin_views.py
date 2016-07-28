@@ -43,8 +43,7 @@ class QuestionResultsAdminView(FormView):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = \
             'attachment;filename="question-{0}-results.csv"'.format(
-                question_title
-            )
+                question_title)
 
         writer = csv.writer(response)
         writer.writerow(data_headings)
