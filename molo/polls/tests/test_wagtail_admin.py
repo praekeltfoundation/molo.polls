@@ -1,16 +1,14 @@
-import datetime
-from django.test import TestCase, Client
+from datetime import datetime
+
 from django.contrib.auth.models import User
-
-from molo.core.tests.base import MoloTestCaseMixin
+from django.test import TestCase, Client
 from molo.core.models import SiteLanguage
+from molo.core.tests.base import MoloTestCaseMixin
+from molo.polls.models import Choice, Question, FreeTextQuestion,\
+    FreeTextVote, PollsIndexPage, ChoiceVote
 
-from molo.polls.models import (Choice, Question, FreeTextQuestion,
-                               FreeTextVote, PollsIndexPage)
 
-
-class TestAdminUserView(TestCase, MoloTestCaseMixin):
-
+class TestQuestionResultsAdminView(TestCase, MoloTestCaseMixin):
     def setUp(self):
         self.superuser = User.objects.create_superuser(
             username='superuser',
@@ -19,8 +17,10 @@ class TestAdminUserView(TestCase, MoloTestCaseMixin):
             is_staff=True)
 
         self.mk_main()
+
         # Create Main language
         self.english = SiteLanguage.objects.create(locale='en')
+
         # Create polls index page
         self.polls_index = PollsIndexPage(title='Polls', slug='polls')
         self.main.add_child(instance=self.polls_index)
@@ -29,7 +29,7 @@ class TestAdminUserView(TestCase, MoloTestCaseMixin):
         self.client = Client()
         self.client.login(username='superuser', password='0000')
 
-    def test_wagtail_admin_poll_view(self):
+    def test_question_appears_in_wagtail_admin(self):
         question = Question(title='is this a test')
         self.polls_index.add_child(instance=question)
 
@@ -39,59 +39,83 @@ class TestAdminUserView(TestCase, MoloTestCaseMixin):
 
         self.assertContains(response, question.title)
 
-    def test_wagtail_admin_choice_view(self):
+    def test_question_results_view(self):
         question = Question(title='is this a test')
         self.polls_index.add_child(instance=question)
 
         choice1 = Choice(title='yes')
         question.add_child(instance=choice1)
+        choice2 = Choice(title='no')
+        question.add_child(instance=choice2)
         question.save_revision().publish()
 
+        choice_vote = ChoiceVote(user=self.superuser, question=question)
+        choice_vote.save()
+        choice_vote.choice.add(choice1)
+        choice1.choice_votes.add(choice_vote)
+
         response = self.client.get(
-            '/admin/poll/{0}/results/'.format(question.id)
+            '/admin/polls/question/{0}/results/'.format(question.id)
         )
 
-        self.assertContains(response, choice1.title)
+        expected_headings_html = '<tr><th>Submission Date</th><th>Answer</th>'\
+                                 '<th>User</th></tr>'
 
-        # test CSV export
+        expected_data_html = '<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>'\
+            .format(datetime.today().strftime('%B %d, %Y'),
+                    choice1.title,
+                    self.superuser.username)
+
+        self.assertContains(response, expected_headings_html, html=True)
+        self.assertContains(response, expected_data_html, html=True)
+
+        # test CSV download
         response = self.client.get(
-            '/admin/poll/{0}/results/?CSV'.format(question.id)
+            '/admin/polls/question/{0}/results/?action=download'.format(
+                question.id)
         )
 
         expected_output = (
-            'votes,title\r\n'
-            '0,yes'
+            'Submission Date,Answer,User\r\n'
+            '%s,yes,superuser\r\n' % datetime.today().strftime('%Y-%m-%d')
         )
 
         self.assertContains(response, expected_output)
 
-    def test_wagtail_admin_freetext_view(self):
-        question = FreeTextQuestion(
-            title='is this a test')
+    def test_freetextquestion_results_view(self):
+        question = FreeTextQuestion(title='is this a test')
         self.polls_index.add_child(instance=question)
         question.save_revision().publish()
 
-        vote = FreeTextVote(user=self.superuser,
-                            question=question,
-                            answer='Test')
-        vote.save()
+        free_text_vote = FreeTextVote(user=self.superuser, question=question,
+                                      answer='yeah probably')
+        free_text_vote.save()
 
         response = self.client.get(
-            '/admin/poll/{0}/results/'.format(question.id)
+            '/admin/polls/question/{0}/results/'.format(question.id)
         )
 
-        self.assertContains(response, vote.answer)
+        expected_headings_html = '<tr><th>Submission Date</th><th>Answer</th>'\
+                                 '<th>User</th></tr>'
 
-        # test CSV export
+        expected_data_html = '<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>' \
+            .format(datetime.today().strftime('%B %d, %Y'),
+                    free_text_vote.answer,
+                    self.superuser.username)
+
+        self.assertContains(response, expected_headings_html, html=True)
+        self.assertContains(response, expected_data_html, html=True)
+
+        # test CSV download
         response = self.client.get(
-            '/admin/poll/{0}/results/?CSV'.format(question.id)
+            '/admin/polls/question/{0}/results/?action=download'.format(
+                question.id)
         )
-
-        date = str(datetime.datetime.now().date())
 
         expected_output = (
-            'answer,submission date,question,user\r\n'
-            'Test,{0},is this a test,superuser'.format(date)
+            'Submission Date,Answer,User\r\n'
+            '%s,yeah probably,superuser\r\n'
+            % datetime.today().strftime('%Y-%m-%d')
         )
 
         self.assertContains(response, expected_output)
