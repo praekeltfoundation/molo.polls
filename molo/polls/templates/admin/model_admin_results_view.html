@@ -14,7 +14,7 @@
 
 {% block content %}
     {% block header %}
-        <header class="nice-padding hasform">
+        <header class="nice-padding">
             <div class="row">
                 <div class="left">
                     <div class="col">
@@ -25,12 +25,8 @@
                 </div>
 
                 <div class="right">
-                    <form method="get">
-                        <button type="submit"
-                                class="button bicolor icon icon-download"
-                                name="CSV">{% trans "Download CSV" %}
-                        </button>
-                    </form>
+                    <a class="button bicolor icon icon-download"
+                       href="?action=download">{% trans "Download CSV" %}</a>
                 </div>
             </div>
         </header>
@@ -38,7 +34,7 @@
 
     {% block content_main %}
         <div id="content-main">
-            <div class="row nice-padding" id="changelist">
+            <div class="row nice-padding">
                 {% block content_cols %}
                     <table class="listing">
                         <thead>

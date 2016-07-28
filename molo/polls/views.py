@@ -127,16 +127,12 @@ class FreeTextVoteView(FormView):
 
 
 class PollResultView(FormView):
-    # def get_context_data(self, **kwargs):
-    #     kwargs = super(PollResultView, self).get_context_data()
-    #     kwargs['parent'] = self.kwargs['parent']
-    #     return kwargs
-
     def get(self, request, *args, **kwargs):
         parent = kwargs['parent']
         question = get_object_or_404(Question, pk=parent)
 
-        results = []
+        data_headings = ['Submission Date', 'Answer', 'User']
+        data_rows = []
 
         if hasattr(question, 'freetextquestion'):
             votes = question.freetextquestion.freetextvote_set.all()
@@ -144,34 +140,35 @@ class PollResultView(FormView):
             votes = question.question.choicevote_set.all()
 
         for vote in votes:
-            results.append(OrderedDict({
+            data_rows.append(OrderedDict({
                 'submission_date': vote.submission_date,
                 'answer': vote.answer,
                 'user': vote.user
             }))
 
+        action = request.GET.get('action', None)
+        if action == 'download':
+            return self.send_csv(question.title, data_headings, data_rows)
+
         context = {
             'page_title': question.title,
             'data_headings': ['Submission Date', 'Answer', 'User'],
-            'data_rows': results
+            'data_rows': data_rows
         }
 
-        # if 'CSV' in request.GET:
-        #     response = HttpResponse(content_type='text/csv')
-        #     response[
-        #         'Content-Disposition'] = 'attachment; ' \
-        #                                  'filename="{0} results.csv"' \
-        #         .format(question.title)
-        #
-        #     writer = csv.writer(response)
-        #     writer.writerow(data_headings)
-        #     for item in data_rows:
-        #         data_row = []
-        #         form_data = item['fields']
-        #         for value in form_data:
-        #             data_row.append(value)
-        #         writer.writerow(data_row)
-        #
-        #     return response
-
         return render(request, 'admin/model_admin_results_view.html', context)
+
+    def send_csv(self, question_title, data_headings, data_rows):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = \
+            'attachment;filename="question-{0}-results.csv"'.format(
+                question_title
+            )
+
+        writer = csv.writer(response)
+        writer.writerow(data_headings)
+
+        for item in data_rows:
+            writer.writerow(item.values())
+
+        return response
