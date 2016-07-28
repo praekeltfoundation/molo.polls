@@ -8,7 +8,7 @@ from wagtailmodeladmin.options import ModelAdmin, wagtailmodeladmin_register
 
 
 @hooks.register('register_admin_urls')
-def register_admin_reply_url():
+def register_question_results_admin_view_url():
     return [
         url(r'poll/(?P<parent>\d+)/results/$',
             QuestionResultsAdminView.as_view(),
