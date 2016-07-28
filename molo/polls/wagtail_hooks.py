@@ -10,9 +10,9 @@ from wagtailmodeladmin.options import ModelAdmin, wagtailmodeladmin_register
 @hooks.register('register_admin_urls')
 def register_question_results_admin_view_url():
     return [
-        url(r'poll/(?P<parent>\d+)/results/$',
+        url(r'polls/question/(?P<parent>\d+)/results/$',
             QuestionResultsAdminView.as_view(),
-            name='wagtail-polls-results'),
+            name='question-results-admin'),
     ]
 
 
@@ -24,7 +24,7 @@ class QuestionsModelAdmin(ModelAdmin, QuestionAdmin):
     list_display = ('entries', 'live')
 
     def entries(self, obj, *args, **kwargs):
-        url = reverse('wagtail-polls-results', args=(obj.id,))
+        url = reverse('question-results-admin', args=(obj.id,))
         return '<a href="%s">%s</a>' % (url, obj)
 
     entries.allow_tags = True
