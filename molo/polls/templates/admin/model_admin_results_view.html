@@ -18,16 +18,20 @@
             <div class="row">
                 <div class="left">
                     <div class="col">
-                        {% block h1 %}<h1 class="icon icon-doc-full">{{ page_title }}</h1>{% endblock %}
+                        {% block h1 %}
+                            <h1 class="icon icon-doc-full">{{page_title }}</h1>
+                        {% endblock %}
                     </div>
                 </div>
 
-
-            <div class="right">
-              <form method="get">
-                  <button type="submit" class="button bicolor icon icon-download" name="CSV">{% trans "Download CSV" %}</button>
-              </form>
-             </div>
+                <div class="right">
+                    <form method="get">
+                        <button type="submit"
+                                class="button bicolor icon icon-download"
+                                name="CSV">{% trans "Download CSV" %}
+                        </button>
+                    </form>
+                </div>
             </div>
         </header>
     {% endblock %}
@@ -47,16 +51,15 @@
                         <tbody>
                             {% for row in data_rows %}
                                 <tr>
-                                    {% for cell in row.fields %}
+                                    {% for k, v in row.items %}
                                         <td>
-                                            {{ cell }}
+                                            {{ v }}
                                         </td>
                                     {% endfor %}
                                 </tr>
                             {% endfor %}
                         </tbody>
                     </table>
-
                 {% endblock %}
             </div>
         </div>
