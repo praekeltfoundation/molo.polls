@@ -24,10 +24,8 @@ class QuestionsModelAdmin(ModelAdmin, QuestionAdmin):
     list_display = ('entries', 'live')
 
     def entries(self, obj, *args, **kwargs):
-
         url = reverse('wagtail-polls-results', args=(obj.id,))
-        return '<a href="%s?parent=%s">%s</a>' % (
-            url, obj.slug, obj)
+        return '<a href="%s">%s</a>' % (url, obj)
 
     entries.allow_tags = True
     entries.short_description = 'Title'
