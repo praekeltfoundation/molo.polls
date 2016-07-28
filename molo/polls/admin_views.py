@@ -18,7 +18,7 @@ class QuestionResultsAdminView(FormView):
         if hasattr(question, 'freetextquestion'):
             votes = question.freetextquestion.freetextvote_set.all()
         else:
-            votes = question.question.choicevote_set.all()
+            votes = question.choicevote_set.all()
 
         for vote in votes:
             data_rows.append(OrderedDict({
