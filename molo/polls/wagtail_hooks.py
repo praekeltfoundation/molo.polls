@@ -1,17 +1,17 @@
 from django.conf.urls import url
 from django.core.urlresolvers import reverse
 from molo.polls.admin import QuestionAdmin
+from molo.polls.admin_views import QuestionResultsAdminView
 from molo.polls.models import Question
-from molo.polls.views import PollResultView
-from wagtailmodeladmin.options import ModelAdmin, wagtailmodeladmin_register
 from wagtail.wagtailcore import hooks
+from wagtailmodeladmin.options import ModelAdmin, wagtailmodeladmin_register
 
 
 @hooks.register('register_admin_urls')
 def register_admin_reply_url():
     return [
         url(r'poll/(?P<parent>\d+)/results/$',
-            PollResultView.as_view(),
+            QuestionResultsAdminView.as_view(),
             name='wagtail-polls-results'),
     ]
 
