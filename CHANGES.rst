@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+2.1.0
+-----
+- Added Polls view to Wagtail Admin
+
 2.0.3
 -----
 
