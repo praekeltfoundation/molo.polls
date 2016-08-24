@@ -62,7 +62,7 @@ class TestQuestionResultsAdminView(TestCase, MoloTestCaseMixin):
                                  '<th>User</th></tr>'
 
         expected_data_html = '<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>'\
-            .format(datetime.today().strftime('%B %d, %Y'),
+            .format(datetime.today().strftime('%b. %-d, %Y'),
                     choice1.title,
                     self.superuser.username)
 
@@ -99,7 +99,7 @@ class TestQuestionResultsAdminView(TestCase, MoloTestCaseMixin):
                                  '<th>User</th></tr>'
 
         expected_data_html = '<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>' \
-            .format(datetime.today().strftime('%B %d, %Y'),
+            .format(datetime.today().strftime('%b. %-d, %Y'),
                     free_text_vote.answer,
                     self.superuser.username)
 
