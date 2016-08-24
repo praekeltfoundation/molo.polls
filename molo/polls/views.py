@@ -1,14 +1,14 @@
-from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.db.models import F
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.utils.translation import get_language_from_request
 from django.views import generic
+from django.views.generic.edit import FormView
+from molo.core.utils import get_locale_code
+from molo.polls.forms import TextVoteForm, VoteForm, NumericalTextVoteForm
 from molo.polls.models import (
     Choice, Question, FreeTextVote, ChoiceVote, FreeTextQuestion)
-from django .db.models import F
-from django.views.generic.edit import FormView
-from molo.polls.forms import TextVoteForm, VoteForm, NumericalTextVoteForm
-from django.utils.translation import get_language_from_request
-from molo.core.utils import get_locale_code
 
 
 class IndexView(generic.ListView):

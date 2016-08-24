@@ -1,6 +1,14 @@
 CHANGE LOG
 ==========
 
+2.2.0
+-----
+- Add support for hiding untranslated content
+
+2.1.0
+-----
+- Added Polls view to Wagtail Admin
+
 2.0.3
 -----
 
