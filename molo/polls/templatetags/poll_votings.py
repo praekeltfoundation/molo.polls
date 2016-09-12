@@ -21,7 +21,7 @@ def poll_page(context, pk=None):
             Question.objects.child_of(page).filter(
                 languages__language__is_main_language=True).specific())
     else:
-        questions = []
+        questions = Question.objects.none()
 
     context.update({
         'questions': get_pages(context, questions, locale_code)
@@ -39,7 +39,7 @@ def poll_page_in_section(context, pk=None, page=None):
             Question.objects.child_of(page).filter(
                 languages__language__is_main_language=True).specific())
     else:
-        questions = []
+        questions = Question.objects.none()
 
     context.update({
         'questions': get_pages(context, questions, locale_code)
