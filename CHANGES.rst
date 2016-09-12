@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+2.2.1
+-----
+- Return None if there is no question
+
 2.2.0
 -----
 - Add support for hiding untranslated content
