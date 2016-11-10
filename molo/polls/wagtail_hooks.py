@@ -19,8 +19,7 @@ wagtailmodeladmin_register(QuestionsModelAdmin)
 
 @hooks.register('construct_main_menu')
 def show_polls_entries_for_users_have_access(request, menu_items):
-    u = User.objects.filter(pk=request.user.pk).first()
-    if not u.is_superuser and not User.objects.filter(
+    if not request.user.is_superuser and not User.objects.filter(
             pk=request.user.pk, groups__name='Moderators').exists():
         menu_items[:] = [
             item for item in menu_items if item.name != 'polls']
