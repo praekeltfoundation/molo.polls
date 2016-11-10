@@ -3,6 +3,10 @@ CHANGE LOG
 
 2.2.1
 -----
+- Add polls permissions to groups
+
+2.2.1
+-----
 - Return None if there is no question
 
 2.2.0
