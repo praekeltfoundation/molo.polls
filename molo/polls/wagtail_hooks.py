@@ -2,7 +2,7 @@ from django.conf.urls import url
 from molo.polls.admin import QuestionsModelAdmin
 from molo.polls.admin_views import QuestionResultsAdminView
 from wagtail.wagtailcore import hooks
-from wagtailmodeladmin.options import wagtailmodeladmin_register
+from wagtail.contrib.modeladmin.options import modeladmin_register
 from django.contrib.auth.models import User
 
 
@@ -14,7 +14,7 @@ def register_question_results_admin_view_url():
             name='question-results-admin'),
     ]
 
-wagtailmodeladmin_register(QuestionsModelAdmin)
+modeladmin_register(QuestionsModelAdmin)
 
 
 @hooks.register('construct_main_menu')
