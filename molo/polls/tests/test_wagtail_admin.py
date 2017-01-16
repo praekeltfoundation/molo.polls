@@ -35,7 +35,7 @@ class TestQuestionResultsAdminView(TestCase, MoloTestCaseMixin):
         self.polls_index.add_child(instance=question)
 
         response = self.client.get(
-            '/admin/modeladmin/polls/question/'
+            '/admin/polls/question/'
         )
 
         self.assertContains(response, question.title)
