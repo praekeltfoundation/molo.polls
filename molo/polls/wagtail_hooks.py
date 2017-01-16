@@ -14,6 +14,7 @@ def register_question_results_admin_view_url():
             name='question-results-admin'),
     ]
 
+
 modeladmin_register(QuestionsModelAdmin)
 
 

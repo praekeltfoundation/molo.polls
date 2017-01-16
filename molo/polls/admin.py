@@ -61,6 +61,8 @@ def download_as_csv(question_admin, request, queryset):
                     choice.user, choice.answer])
 
     return response
+
+
 download_as_csv.short_description = "Download selected as csv"
 
 

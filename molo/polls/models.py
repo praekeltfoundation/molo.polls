@@ -83,6 +83,7 @@ class Question(TranslatablePageMixin, Page):
                     parent_article  .get_effective_extra_style_hints()
         return self.extra_style_hints
 
+
 Question.settings_panels = [
     MultiFieldPanel(
         [FieldRowPanel(
