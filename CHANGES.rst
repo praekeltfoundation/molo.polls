@@ -1,6 +1,17 @@
 CHANGE LOG
 ==========
 
+3.0.0
+-----
+- Removed dependency on wagtailmodeladmin
+
+Backwards incompatible changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Removed use of ``wagtailmodeladmin``: use ``wagtail.contrib.modeladmin`` instead
+- ``{% load wagtailmodeladmin_tags %}`` has been replaced by ``{% load modeladmin_tags %}``
+
+NOTE: This release is not compatible with molo versions that are less than 4.0
+
 2.2.1
 -----
 - Add polls permissions to groups
