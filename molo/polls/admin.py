@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from molo.polls.models import Question, Choice, FreeTextVote
-from wagtailmodeladmin.options import ModelAdmin as WagtailModelAdmin
+from wagtail.contrib.modeladmin.options import ModelAdmin as WagtailModelAdmin
 
 
 class ParentListFilter(admin.SimpleListFilter):
@@ -61,6 +61,8 @@ def download_as_csv(question_admin, request, queryset):
                     choice.user, choice.answer])
 
     return response
+
+
 download_as_csv.short_description = "Download selected as csv"
 
 

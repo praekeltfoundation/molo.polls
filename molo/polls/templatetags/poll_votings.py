@@ -5,6 +5,8 @@ from django import template
 
 from molo.polls.models import Question, Choice, PollsIndexPage
 
+from molo.core.templatetags.core_tags import get_pages
+
 register = template.Library()
 
 
@@ -16,14 +18,13 @@ def poll_page(context, pk=None):
     page = PollsIndexPage.objects.live().first()
     if page:
         questions = (
-            Question.objects.live().child_of(page).filter(
+            Question.objects.child_of(page).filter(
                 languages__language__is_main_language=True).specific())
     else:
-        questions = []
+        questions = Question.objects.none()
 
     context.update({
-        'questions': [
-            a.get_translation_for(locale_code) or a for a in questions]
+        'questions': get_pages(context, questions, locale_code)
     })
     return context
 
@@ -35,14 +36,13 @@ def poll_page_in_section(context, pk=None, page=None):
     locale_code = context.get('locale_code')
     if page:
         questions = (
-            Question.objects.live().child_of(page).filter(
+            Question.objects.child_of(page).filter(
                 languages__language__is_main_language=True).specific())
     else:
-        questions = []
+        questions = Question.objects.none()
 
     context.update({
-        'questions': [
-            a.get_translation_for(locale_code) or a for a in questions]
+        'questions': get_pages(context, questions, locale_code)
     })
     return context
 
@@ -51,13 +51,13 @@ def poll_page_in_section(context, pk=None, page=None):
 def load_choices_for_poll_page(context, question):
     page = question.get_main_language_page()
     locale = context.get('locale_code')
-    qs = Choice.objects.live().child_of(page).filter(
+    qs = Choice.objects.child_of(page).filter(
         languages__language__is_main_language=True)
 
     if not locale:
         return qs
 
-    return [a.get_translation_for(locale) or a for a in qs]
+    return get_pages(context, qs, locale)
 
 
 @register.assignment_tag(takes_context=True)

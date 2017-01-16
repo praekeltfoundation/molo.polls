@@ -1,5 +1,5 @@
 {% extends "wagtailadmin/base.html" %}
-{% load i18n wagtailmodeladmin_tags admin_static admin_modify %}
+{% load i18n modeladmin_tags admin_static admin_modify %}
 {% load admin_urls %}
 
 {% block titletag %}{{ view.get_meta_title }}{% endblock %}
@@ -23,11 +23,12 @@
                         {% endblock %}
                     </div>
                 </div>
-
+                {% if user.is_superuser %}
                 <div class="right">
                     <a class="button bicolor icon icon-download"
                        href="?action=download">{% trans "Download CSV" %}</a>
                 </div>
+                {% endif %}
             </div>
         </header>
     {% endblock %}
