@@ -3,8 +3,9 @@
 
 {% block titletag %}{{ view.get_meta_title }}{% endblock %}
 
-{% block extra_css %}
-    {{ view.media.css }}
+{% block css %}
+     {{ block.super }}
+     {{ view.media.css }}
 {% endblock %}
 
 {% block extra_js %}
