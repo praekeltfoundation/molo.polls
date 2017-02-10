@@ -4,3 +4,4 @@ pytest-cov
 pytest-xdist
 flake8
 responses
+beautifulsoup4
