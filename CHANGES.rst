@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+3.1.0
+-----
+- Removed ability to delete Polls IndexPage in the Admin UI
+
 3.0.1
 -----
 - Updated templates in order to reflect styling changes in modeladmin
