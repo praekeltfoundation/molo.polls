@@ -28,6 +28,24 @@ def poll_page(context, pk=None):
     })
     return context
 
+@register.inclusion_tag('polls/poll_headline.html',
+                        takes_context=True)
+def poll_headline(context, pk=None):
+    context = copy(context)
+    locale_code = context.get('locale_code')
+    page = PollsIndexPage.objects.live().first()
+    if page:
+        questions = (
+            Question.objects.child_of(page).filter(
+                languages__language__is_main_language=True).specific())
+    else:
+        questions = Question.objects.none()
+
+    context.update({
+        'questions': get_pages(context, questions, locale_code)
+    })
+    return context
+
 
 @register.inclusion_tag('polls/poll_page_in_section.html',
                         takes_context=True)

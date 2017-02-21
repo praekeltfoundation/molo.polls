@@ -2,25 +2,25 @@
 {% load i18n static core_tags %}
 
 {% block content %}
-	<div class="list-inline">
+<div class="polls polls--results">
 		{% if question.show_results and not question.freetextquestion%}
-			<h4>{{ question.title }}</h4>
+			<h2 class="poll__question-title">{{ question.title }}</h2>
 			<p>{% trans "Your answers:" %}</p>
 				{% for choice in choices %}
-					<span>{{ choice.title }}</span>
-						{% if question.result_as_percentage %}
-							{{ choice.percentage }}%
-							<br>
+					<p>
+            <span>{{ choice.title }}</span>
+            {% if question.result_as_percentage %}
+							<span>{{ choice.percentage }}%</span>
+          </p>
 						{% else %}
-							{{ choice.votes }} vote{{ choice.votes|pluralize }}
-							<br>
-						{% endif %}
-		      </span>
+          <p>
+						<span>{{ choice.votes }} vote{{ choice.votes|pluralize }}</span>
+					</p>
+					  {% endif %}
 				{% endfor %}
 		{% else %}
-			<h4>{% trans "Thank you for voting!" %}</h4>
+		<h4 class="poll__title">{% trans "Thank you for voting!" %}</h4>
 		{% endif %}
-		<br>
 	  <a href="{{request.site.root_page.url}}">{% trans "Home" %}</a>
-	</div>
+</div>
 {% endblock %}
