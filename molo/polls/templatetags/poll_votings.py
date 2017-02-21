@@ -28,6 +28,7 @@ def poll_page(context, pk=None):
     })
     return context
 
+
 @register.inclusion_tag('polls/poll_headline.html',
                         takes_context=True)
 def poll_headline(context, pk=None):
