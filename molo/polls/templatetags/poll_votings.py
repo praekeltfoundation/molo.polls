@@ -29,15 +29,11 @@ def poll_page(context, pk=None):
     return context
 
 
-
 @register.assignment_tag(takes_context=True)
-def load_polls(context, parent):
+def load_polls(context):
     context = copy(context)
     locale_code = context.get('locale_code')
-    if parent:
-        page = parent
-    else:
-        page = PollsIndexPage.objects.live().first()
+    page = PollsIndexPage.objects.live().first()
 
     if page:
         questions = (
