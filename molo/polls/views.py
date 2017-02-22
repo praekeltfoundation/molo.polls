@@ -25,7 +25,8 @@ class PollsDetailsView(TemplateView):
     template_name = 'polls/polls_details.html'
 
     def get_context_data(self, *args, **kwargs):
-        context = super(PollsDetailsView, self).get_context_data(*args, **kwargs)
+        context = super(
+            PollsDetailsView, self).get_context_data(*args, **kwargs)
         context.update({
             'question': Question.objects.get(pk=kwargs.get('question_id'))
         })
