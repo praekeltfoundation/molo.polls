@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+3.2.0
+-----
+- Added Polls load_polls template tag and new polls_details template file for polls footer headline link
+
 3.1.0
 -----
 - Removed ability to delete Polls IndexPage in the Admin UI
