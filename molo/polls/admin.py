@@ -1,11 +1,11 @@
+import csv
+import datetime
+
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-
-import datetime
-import csv
-
 from molo.polls.models import Question, Choice, FreeTextVote
+from wagtail.contrib.modeladmin.options import ModelAdmin as WagtailModelAdmin
 
 
 class ParentListFilter(admin.SimpleListFilter):
@@ -61,6 +61,8 @@ def download_as_csv(question_admin, request, queryset):
                     choice.user, choice.answer])
 
     return response
+
+
 download_as_csv.short_description = "Download selected as csv"
 
 
@@ -108,3 +110,19 @@ class FreeTextVoteAdmin(admin.ModelAdmin):
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Choice, ChoiceAdmin)
 admin.site.register(FreeTextVote, FreeTextVoteAdmin)
+
+
+# Below here is for Wagtail Admin
+class QuestionsModelAdmin(WagtailModelAdmin, QuestionAdmin):
+    model = Question
+    menu_label = 'Polls'
+    menu_icon = 'doc-full'
+    add_to_settings_menu = False
+    list_display = ('entries', 'live')
+
+    def entries(self, obj, *args, **kwargs):
+        url = reverse('question-results-admin', args=(obj.id,))
+        return '<a href="%s">%s</a>' % (url, obj)
+
+    entries.allow_tags = True
+    entries.short_description = 'Title'

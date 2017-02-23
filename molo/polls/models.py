@@ -2,7 +2,12 @@ from django.db import models
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailadmin.edit_handlers import (
     FieldPanel, MultiFieldPanel, FieldRowPanel)
-from molo.core.models import ArticlePage, SectionPage, TranslatablePageMixin
+from molo.core.models import (
+    ArticlePage,
+    SectionPage,
+    TranslatablePageMixin,
+    PreventDeleteMixin,
+)
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -10,7 +15,7 @@ SectionPage.subpage_types += ['polls.Question', 'polls.FreeTextQuestion']
 ArticlePage.subpage_types += ['polls.Question', 'polls.FreeTextQuestion']
 
 
-class PollsIndexPage(Page):
+class PollsIndexPage(Page, PreventDeleteMixin):
     parent_page_types = []
     subpage_types = ['polls.Question', 'polls.FreeTextQuestion']
 
@@ -82,6 +87,7 @@ class Question(TranslatablePageMixin, Page):
                 return self.extra_style_hints or \
                     parent_article  .get_effective_extra_style_hints()
         return self.extra_style_hints
+
 
 Question.settings_panels = [
     MultiFieldPanel(

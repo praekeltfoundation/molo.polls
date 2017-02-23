@@ -1,6 +1,45 @@
 CHANGE LOG
 ==========
 
+3.2.0
+-----
+- Added Polls load_polls template tag and new polls_details template file for polls footer headline link
+
+3.1.0
+-----
+- Removed ability to delete Polls IndexPage in the Admin UI
+
+3.0.1
+-----
+- Updated templates in order to reflect styling changes in modeladmin
+
+3.0.0
+-----
+- Removed dependency on wagtailmodeladmin
+
+Backwards incompatible changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Removed use of ``wagtailmodeladmin``: use ``wagtail.contrib.modeladmin`` instead
+- ``{% load wagtailmodeladmin_tags %}`` has been replaced by ``{% load modeladmin_tags %}``
+
+NOTE: This release is not compatible with molo versions that are less than 4.0
+
+2.2.1
+-----
+- Add polls permissions to groups
+
+2.2.1
+-----
+- Return None if there is no question
+
+2.2.0
+-----
+- Add support for hiding untranslated content
+
+2.1.0
+-----
+- Added Polls view to Wagtail Admin
+
 2.0.3
 -----
 
