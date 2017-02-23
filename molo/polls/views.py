@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import get_language_from_request
 from django.views import generic
+from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 from molo.core.utils import get_locale_code
 from molo.polls.forms import TextVoteForm, VoteForm, NumericalTextVoteForm
@@ -18,6 +19,18 @@ class IndexView(generic.ListView):
     def get_queryset(self):
         """Return the last five published questions."""
         return Question.objects.order_by('-pub_date')[:5]
+
+
+class PollsDetailsView(TemplateView):
+    template_name = 'polls/polls_details.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(
+            PollsDetailsView, self).get_context_data(*args, **kwargs)
+        context.update({
+            'question': Question.objects.get(pk=kwargs.get('question_id'))
+        })
+        return context
 
 
 class DetailView(generic.DetailView):

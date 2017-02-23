@@ -29,6 +29,22 @@ def poll_page(context, pk=None):
     return context
 
 
+@register.assignment_tag(takes_context=True)
+def load_polls(context):
+    context = copy(context)
+    locale_code = context.get('locale_code')
+    page = PollsIndexPage.objects.live().first()
+
+    if page:
+        questions = (
+            Question.objects.child_of(page).filter(
+                languages__language__is_main_language=True).specific())
+    else:
+        questions = Question.objects.none()
+
+    return get_pages(context, questions, locale_code)
+
+
 @register.inclusion_tag('polls/poll_page_in_section.html',
                         takes_context=True)
 def poll_page_in_section(context, pk=None, page=None):

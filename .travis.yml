@@ -18,6 +18,7 @@ script:
   - pip install molo.profiles
   - cp molo/polls/test_templates/main.html testapp/testapp/templates/core/main.html
   - cp molo/polls/test_templates/section_page.html testapp/testapp/templates/core/section_page.html
+  - cp molo/polls/test_templates/base.html testapp/testapp/templates/base.html
   - flake8 testapp
   - pip install -e testapp
   - py.test --cov=molo
