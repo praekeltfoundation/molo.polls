@@ -1,29 +1,18 @@
-from django.test import TestCase
-
-from molo.polls.models import PollsIndexPage
-
-from molo.core.models import SiteLanguage, Main
-from molo.core.tests.base import MoloTestCaseMixin
-
 from bs4 import BeautifulSoup
 
+from molo.core.models import Main
 
-class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
+from molo.polls.tests.base import BasePollsTestCase
+from molo.polls.models import PollsIndexPage
 
-    def setUp(self):
-        self.mk_main()
-        self.english = SiteLanguage.objects.create(locale='en')
 
-        self.login()
-
-        # Create polls index page
-        self.polls_index = PollsIndexPage(
-            title='Security Questions',
-            slug='security-questions')
-        self.main.add_child(instance=self.polls_index)
-        self.polls_index.save_revision().publish()
+class TestDeleteButtonRemoved(BasePollsTestCase):
 
     def test_delete_btn_removed_for_polls_index_page_in_main(self):
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
 
         main_page = Main.objects.first()
         response = self.client.get('/admin/pages/{0}/'
@@ -42,6 +31,11 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
                 self.assertFalse(row.find('a', string='Delete'))
 
     def test_delete_button_removed_from_dropdown_menu(self):
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
+
         polls_index_page = PollsIndexPage.objects.first()
 
         response = self.client.get('/admin/pages/{0}/'
@@ -55,6 +49,11 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
         self.assertNotContains(response, delete_link, html=True)
 
     def test_delete_button_removed_in_edit_menu(self):
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
+
         polls_index_page = PollsIndexPage.objects.first()
 
         response = self.client.get('/admin/pages/{0}/edit/'

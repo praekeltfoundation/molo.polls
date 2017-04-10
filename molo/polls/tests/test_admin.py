@@ -1,28 +1,25 @@
 import datetime
 
-from django.test import TestCase
 from django.test.client import Client
 from django.core.urlresolvers import reverse
 
-from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.models import SiteLanguage
+from molo.core.models import (
+    Main,
+    SiteLanguageRelation,
+    Languages
+)
 
 from molo.polls.admin import QuestionAdmin, download_as_csv
-from molo.polls.models import (Choice, Question, FreeTextQuestion,
-                               PollsIndexPage)
+from molo.polls.models import (
+    Choice,
+    Question,
+    FreeTextQuestion,
+    PollsIndexPage,
+)
+from molo.polls.tests.base import BasePollsTestCase
 
 
-class ModelsTestCase(TestCase, MoloTestCaseMixin):
-
-    def setUp(self):
-        self.user = self.login()
-        self.mk_main()
-        # Creates Main language
-        self.english = SiteLanguage.objects.create(locale='en')
-        # Create polls index page
-        self.polls_index = PollsIndexPage(title='Polls', slug='polls')
-        self.main.add_child(instance=self.polls_index)
-        self.polls_index.save_revision().publish()
+class AdminTestCase(BasePollsTestCase):
 
     def test_download_csv_question(self):
         # make choices
