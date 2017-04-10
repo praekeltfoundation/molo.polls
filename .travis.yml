@@ -17,6 +17,7 @@ script:
   - molo scaffold testapp --include molo.polls ^polls/
   - mkdir testapp/testapp/templates/
   - mkdir testapp/testapp/templates/core/
+  - cp molo/polls/test_settings.py testapp/testapp/settings
   - cp molo/polls/test_templates/main.html testapp/testapp/templates/core/main.html
   - cp molo/polls/test_templates/section_page.html testapp/testapp/templates/core/section_page.html
   - cp molo/polls/test_templates/base.html testapp/testapp/templates/base.html
