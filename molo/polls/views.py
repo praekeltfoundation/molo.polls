@@ -44,7 +44,8 @@ def poll_results(request, poll_id):
     qs = Choice.objects.live().child_of(page).filter(
         languages__language__is_main_language=True)
     locale = get_locale_code(get_language_from_request(request))
-    choices = [(a.get_translation_for(locale) or a, a) for a in qs]
+    choices = [(a.get_translation_for(locale, request.site) or a, a)
+               for a in qs]
     total_votes = sum(c.votes for c in qs)
     choice_color = ['orange', 'purple', 'turq']
     index = 0

@@ -15,7 +15,8 @@ register = template.Library()
 def poll_page(context, pk=None):
     context = copy(context)
     locale_code = context.get('locale_code')
-    page = PollsIndexPage.objects.live().first()
+    main = context['request'].site.root_page
+    page = PollsIndexPage.objects.child_of(main).live().first()
     if page:
         questions = (
             Question.objects.child_of(page).filter(
@@ -33,7 +34,8 @@ def poll_page(context, pk=None):
 def load_polls(context):
     context = copy(context)
     locale_code = context.get('locale_code')
-    page = PollsIndexPage.objects.live().first()
+    main = context['request'].site.root_page
+    page = PollsIndexPage.objects.child_of(main).live().first()
 
     if page:
         questions = (
