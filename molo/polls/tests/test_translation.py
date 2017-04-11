@@ -1,4 +1,3 @@
-from django.test.client import Client
 from django.core.urlresolvers import reverse
 
 from molo.polls.tests.base import BasePollsTestCase

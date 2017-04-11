@@ -3,18 +3,11 @@ import datetime
 from django.test.client import Client
 from django.core.urlresolvers import reverse
 
-from molo.core.models import (
-    Main,
-    SiteLanguageRelation,
-    Languages
-)
-
 from molo.polls.admin import QuestionAdmin, download_as_csv
 from molo.polls.models import (
     Choice,
     Question,
     FreeTextQuestion,
-    PollsIndexPage,
 )
 from molo.polls.tests.base import BasePollsTestCase
 
