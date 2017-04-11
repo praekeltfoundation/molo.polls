@@ -42,7 +42,7 @@ class AdminTestCase(BasePollsTestCase):
                                    Question.objects.all())
         date = str(datetime.datetime.now().date())
         expected_output = (('Content-Type: text/csv\r\nContent-Disposition:'
-                            ' attachment;filename=questions-' + date +
+                            ' attachment;filename=questions-{0}'
                             '.csv\r\n\r\n'
                             'title,date_submitted,user,answer'
                             '\r\nis this a test,{0},{1},'
@@ -86,7 +86,7 @@ class AdminTestCase(BasePollsTestCase):
                                    Question.objects.all())
         date = str(datetime.datetime.now().date())
         expected_output = (('Content-Type: text/csv\r\nContent-Disposition:'
-                            ' attachment;filename=questions-' + date +
+                            ' attachment;filename=questions-{0}'
                             '.csv\r\n\r\n'
                             'title,date_submitted,user,answer'
                             '\r\nis this a test,{0},{1},'
@@ -123,7 +123,7 @@ class AdminTestCase(BasePollsTestCase):
                                    Question.objects.all())
         date = str(datetime.datetime.now().date())
         expected_output = (('Content-Type: text/csv\r\nContent-Disposition:'
-                            ' attachment;filename=questions-' + date +
+                            ' attachment;filename=questions-{0}'
                             '.csv\r\n\r\n'
                             'title,date_submitted,user,answer'
                             '\r\nis this a test,{0},{1},'
@@ -155,7 +155,7 @@ class AdminTestCase(BasePollsTestCase):
                                    Question.objects.all())
         date = str(datetime.datetime.now().date())
         expected_output = (('Content-Type: text/csv\r\nContent-Disposition:'
-                            ' attachment;filename=questions-' + date +
+                            ' attachment;filename=questions-{0}'
                             '.csv\r\n\r\n'
                             'title,date_submitted,user,answer'
                             '\r\nis this a test,{0},{1},'
@@ -187,7 +187,7 @@ class AdminTestCase(BasePollsTestCase):
                                    Question.objects.all())
         date = str(datetime.datetime.now().date())
         expected_output = (('Content-Type: text/csv\r\nContent-Disposition:'
-                            ' attachment;filename=questions-' + date +
+                            ' attachment;filename=questions-{0}'
                             '.csv\r\n\r\n'
                             'title,date_submitted,user,answer'
                             '\r\nshort,{0},{1},'
