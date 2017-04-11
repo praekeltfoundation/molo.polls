@@ -29,8 +29,10 @@ class TemplateTagTestCase(BasePollsTestCase):
 
         response = self.client.get('/')
         self.assertContains(
-            response, '<a href="/polls/7/polls_details/" '
-            'class="footer-link">is this a test</a>', html=True)
+            response,
+            '<a href="/polls/%s/polls_details/" '
+            'class="footer-link">is this a test</a>' % question.id,
+            html=True)
 
         response = self.client.get('/polls/%s/' % question.id)
         self.assertContains(response, "yes")
