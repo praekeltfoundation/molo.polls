@@ -3,7 +3,37 @@ from bs4 import BeautifulSoup
 from molo.core.models import Main
 
 from molo.polls.tests.base import BasePollsTestCase
-from molo.polls.models import PollsIndexPage
+from molo.polls.models import (
+    PollsIndexPage,
+    Question,
+)
+
+
+class TestMultiSitePolls(BasePollsTestCase):
+
+    def test_multi_site_different_polls(self):
+        # create poll on site 1
+        first_site_poll_text = 'site 1 poll'
+        second_site_poll_text = 'site 2 poll'
+        question_site1 = Question(title=first_site_poll_text)
+        self.polls_index.add_child(instance=question_site1)
+        # create poll on site 2
+        question_site2 = Question(title=second_site_poll_text)
+        self.polls_index_main2.add_child(instance=question_site2)
+
+        # request site 1
+        response = self.client.get('/')
+        self.assertEquals(response.status_code, 200)
+        # check title is there
+        self.assertContains(response, first_site_poll_text)
+        self.assertNotContains(response, second_site_poll_text)
+
+        # request site 2
+        response = self.client2.get('/')
+        self.assertEquals(response.status_code, 200)
+        # check that site 2 poll is there
+        self.assertNotContains(response, first_site_poll_text)
+        self.assertContains(response, second_site_poll_text)
 
 
 class TestDeleteButtonRemoved(BasePollsTestCase):
