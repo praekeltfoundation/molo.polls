@@ -1,6 +1,5 @@
 import datetime
 
-from django.test.client import Client
 from django.core.urlresolvers import reverse
 
 from molo.polls.admin import QuestionAdmin, download_as_csv
@@ -27,12 +26,15 @@ class AdminTestCase(BasePollsTestCase):
         question.add_child(instance=choice2)
         question.save_revision().publish()
         # make a vote
-        client = Client()
-        client.login(username='superuser', password='pass')
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
 
-        client.post(reverse('molo.polls:vote',
+        self.client.post(
+            reverse('molo.polls:vote',
                     kwargs={'question_id': question.id}),
-                    {'choice': [choice1.id, choice2.id]})
+            {'choice': [choice1.id, choice2.id]})
         # should automatically create the poll vote
         # test poll vote
         response = download_as_csv(QuestionAdmin(Question, self.site),
@@ -60,12 +62,15 @@ class AdminTestCase(BasePollsTestCase):
         question.add_child(instance=choice2)
         question.save_revision().publish()
         # make a vote
-        client = Client()
-        client.login(username='superuser', password='pass')
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
 
-        client.post(reverse('molo.polls:vote',
+        self.client.post(
+            reverse('molo.polls:vote',
                     kwargs={'question_id': question.id}),
-                    {'choice': [choice1.id, choice2.id]})
+            {'choice': [choice1.id, choice2.id]})
         # should automatically create the poll vote
         # test poll vote
         response = download_as_csv(QuestionAdmin(Question, self.site),
@@ -91,12 +96,15 @@ class AdminTestCase(BasePollsTestCase):
         question.add_child(instance=choice1)
         question.save_revision().publish()
         # make a vote
-        client = Client()
-        client.login(username='superuser', password='pass')
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
 
-        client.post(reverse('molo.polls:vote',
+        self.client.post(
+            reverse('molo.polls:vote',
                     kwargs={'question_id': question.id}),
-                    {'choice': choice1.id})
+            {'choice': choice1.id})
         # should automatically create the poll vote
         # test poll vote
         response = download_as_csv(QuestionAdmin(Question, self.site),
@@ -117,14 +125,17 @@ class AdminTestCase(BasePollsTestCase):
         self.polls_index.add_child(instance=question)
         question.save_revision().publish()
 
-        client = Client()
-        client.login(username='superuser', password='pass')
-        response = client.get('/')
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
+        response = self.client.get('/')
         self.assertContains(response, 'is this a test')
 
-        client.post(reverse('molo.polls:free_text_vote',
+        self.client.post(
+            reverse('molo.polls:free_text_vote',
                     kwargs={'question_id': question.id}),
-                    {'answer': 'this is an answer'})
+            {'answer': 'this is an answer'})
         response = download_as_csv(QuestionAdmin(Question, self.site),
                                    None,
                                    Question.objects.all())
@@ -143,14 +154,17 @@ class AdminTestCase(BasePollsTestCase):
         self.polls_index.add_child(instance=question)
         question.save_revision().publish()
 
-        client = Client()
-        client.login(username='superuser', password='pass')
-        response = client.get('/')
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
+        response = self.client.get('/')
         self.assertContains(response, 'is this a test')
 
-        client.post(reverse('molo.polls:free_text_vote',
+        self.client.post(
+            reverse('molo.polls:free_text_vote',
                     kwargs={'question_id': question.id}),
-                    {'answer': 'this is an answer'})
+            {'answer': 'this is an answer'})
         response = download_as_csv(QuestionAdmin(Question, self.site),
                                    None,
                                    Question.objects.all())
