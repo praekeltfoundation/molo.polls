@@ -41,13 +41,21 @@ class AdminTestCase(BasePollsTestCase):
                                    None,
                                    Question.objects.all())
         date = str(datetime.datetime.now().date())
-        expected_output = ('Content-Type: text/csv\r\nContent-Disposition:'
-                           ' attachment;filename=questions-' + date +
-                           '.csv\r\n\r\n'
-                           'title,date_submitted,user,answer'
-                           '\r\nis this a test,' + date + ',superuser,'
-                           '"yes,no"\r\n')
+        expected_output = (('Content-Type: text/csv\r\nContent-Disposition:'
+                            ' attachment;filename=questions-' + date +
+                            '.csv\r\n\r\n'
+                            'title,date_submitted,user,answer'
+                            '\r\nis this a test,{0},{1},'
+                            '"yes,no"\r\n').format(
+                                date,
+                                self.superuser_name
+                            ))
         self.assertEquals(str(response), expected_output)
+
+        self.client2.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
 
     def test_choice_short_name(self):
         # make choices
@@ -77,12 +85,15 @@ class AdminTestCase(BasePollsTestCase):
                                    None,
                                    Question.objects.all())
         date = str(datetime.datetime.now().date())
-        expected_output = ('Content-Type: text/csv\r\nContent-Disposition:'
-                           ' attachment;filename=questions-' + date +
-                           '.csv\r\n\r\n'
-                           'title,date_submitted,user,answer'
-                           '\r\nis this a test,' + date + ',superuser,'
-                           '"y,n"\r\n')
+        expected_output = (('Content-Type: text/csv\r\nContent-Disposition:'
+                            ' attachment;filename=questions-' + date +
+                            '.csv\r\n\r\n'
+                            'title,date_submitted,user,answer'
+                            '\r\nis this a test,{0},{1},'
+                            '"y,n"\r\n').format(
+                                date,
+                                self.superuser_name
+                            ))
         self.assertEquals(str(response), expected_output)
 
     def test_choice_short_name_single_choice(self):
@@ -111,12 +122,15 @@ class AdminTestCase(BasePollsTestCase):
                                    None,
                                    Question.objects.all())
         date = str(datetime.datetime.now().date())
-        expected_output = ('Content-Type: text/csv\r\nContent-Disposition:'
-                           ' attachment;filename=questions-' + date +
-                           '.csv\r\n\r\n'
-                           'title,date_submitted,user,answer'
-                           '\r\nis this a test,' + date + ',superuser,'
-                           'y\r\n')
+        expected_output = (('Content-Type: text/csv\r\nContent-Disposition:'
+                            ' attachment;filename=questions-' + date +
+                            '.csv\r\n\r\n'
+                            'title,date_submitted,user,answer'
+                            '\r\nis this a test,{0},{1},'
+                            'y\r\n').format(
+                                date,
+                                self.superuser_name
+                            ))
         self.assertEquals(str(response), expected_output)
 
     def test_download_csv_free_text_question(self):
@@ -140,12 +154,15 @@ class AdminTestCase(BasePollsTestCase):
                                    None,
                                    Question.objects.all())
         date = str(datetime.datetime.now().date())
-        expected_output = ('Content-Type: text/csv\r\nContent-Disposition:'
-                           ' attachment;filename=questions-' + date +
-                           '.csv\r\n\r\n'
-                           'title,date_submitted,user,answer'
-                           '\r\nis this a test,' + date + ',superuser,'
-                           'this is an answer\r\n')
+        expected_output = (('Content-Type: text/csv\r\nContent-Disposition:'
+                            ' attachment;filename=questions-' + date +
+                            '.csv\r\n\r\n'
+                            'title,date_submitted,user,answer'
+                            '\r\nis this a test,{0},{1},'
+                            'this is an answer\r\n').format(
+                                date,
+                                self.superuser_name
+                            ))
         self.assertEquals(str(response), expected_output)
 
     def test_download_csv_free_text_question_short_name(self):
@@ -169,10 +186,13 @@ class AdminTestCase(BasePollsTestCase):
                                    None,
                                    Question.objects.all())
         date = str(datetime.datetime.now().date())
-        expected_output = ('Content-Type: text/csv\r\nContent-Disposition:'
-                           ' attachment;filename=questions-' + date +
-                           '.csv\r\n\r\n'
-                           'title,date_submitted,user,answer'
-                           '\r\nshort,' + date + ',superuser,'
-                           'this is an answer\r\n')
+        expected_output = (('Content-Type: text/csv\r\nContent-Disposition:'
+                            ' attachment;filename=questions-' + date +
+                            '.csv\r\n\r\n'
+                            'title,date_submitted,user,answer'
+                            '\r\nshort,{0},{1},'
+                            'this is an answer\r\n').format(
+                                date,
+                                self.superuser_name
+                            ))
         self.assertEquals(str(response), expected_output)
