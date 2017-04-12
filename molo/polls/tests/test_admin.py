@@ -48,8 +48,7 @@ class AdminTestCase(BasePollsTestCase):
                             '\r\nis this a test,{0},{1},'
                             '"yes,no"\r\n').format(
                                 date,
-                                self.superuser_name
-                            ))
+                                self.superuser_name))
         self.assertEquals(str(response), expected_output)
 
         self.client2.login(
@@ -92,8 +91,7 @@ class AdminTestCase(BasePollsTestCase):
                             '\r\nis this a test,{0},{1},'
                             '"y,n"\r\n').format(
                                 date,
-                                self.superuser_name
-                            ))
+                                self.superuser_name))
         self.assertEquals(str(response), expected_output)
 
     def test_choice_short_name_single_choice(self):
@@ -129,8 +127,7 @@ class AdminTestCase(BasePollsTestCase):
                             '\r\nis this a test,{0},{1},'
                             'y\r\n').format(
                                 date,
-                                self.superuser_name
-                            ))
+                                self.superuser_name))
         self.assertEquals(str(response), expected_output)
 
     def test_download_csv_free_text_question(self):
@@ -161,8 +158,7 @@ class AdminTestCase(BasePollsTestCase):
                             '\r\nis this a test,{0},{1},'
                             'this is an answer\r\n').format(
                                 date,
-                                self.superuser_name
-                            ))
+                                self.superuser_name))
         self.assertEquals(str(response), expected_output)
 
     def test_download_csv_free_text_question_short_name(self):
@@ -193,8 +189,7 @@ class AdminTestCase(BasePollsTestCase):
                             '\r\nshort,{0},{1},'
                             'this is an answer\r\n').format(
                                 date,
-                                self.superuser_name
-                            ))
+                                self.superuser_name))
         self.assertEquals(str(response), expected_output)
 
     def test_multisite_download_csv_question(self):
