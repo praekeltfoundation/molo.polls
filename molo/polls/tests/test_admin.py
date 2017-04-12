@@ -220,14 +220,11 @@ class AdminTestCase(BasePollsTestCase):
             ('/admin/polls/question/{0}/'
              'results/?action=download').format(question.pk))
 
-        print(response.content)
-
         date = str(datetime.datetime.now().date())
         expected_output = (
             'Submission Date,Answer,User\r\n{0},"yes,no",{1}\r\n').format(
                 date,
                 self.superuser_name)
-        print(response.content)
         self.assertEquals(str(response.content), expected_output)
 
         # test seperation on multi-site
