@@ -126,3 +126,39 @@ class TestQuestionResultsAdminView(BasePollsTestCase):
             self.superuser_name)
 
         self.assertContains(response, expected_output)
+
+    def test_multisite_wagtail_admin(self):
+
+        question = Question(
+            title='poll for main1',
+            allow_multiple_choice=True, show_results=False)
+        self.polls_index.add_child(instance=question)
+
+        question_main2 = Question(
+            title='poll for main2',
+            allow_multiple_choice=True, show_results=False)
+        self.polls_index_main2.add_child(instance=question_main2)
+
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
+
+        response = self.client.get(
+            '/admin/polls/question/'
+        )
+
+        self.assertContains(response, question.title)
+        self.assertNotContains(response, question_main2.title)
+
+        self.client2.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
+
+        response = self.client2.get(
+            '/admin/polls/question/'
+        )
+
+        self.assertContains(response, question_main2.title)
+        self.assertNotContains(response, question.title)

@@ -198,7 +198,7 @@ class AdminTestCase(BasePollsTestCase):
         choice2 = Choice(title='no')
         # make a question
         question = Question(
-            title='is this a test',
+            title='poll for main1',
             allow_multiple_choice=True, show_results=False)
         self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
@@ -233,7 +233,7 @@ class AdminTestCase(BasePollsTestCase):
         choice1_main2 = Choice(title='yes')
         # make a question
         question_main2 = Question(
-            title='is this a test for main2',
+            title='poll for main2',
             allow_multiple_choice=True, show_results=False)
         self.polls_index_main2.add_child(instance=question_main2)
         question_main2.add_child(instance=choice1_main2)
