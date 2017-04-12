@@ -196,3 +196,72 @@ class AdminTestCase(BasePollsTestCase):
                                 self.superuser_name
                             ))
         self.assertEquals(str(response), expected_output)
+
+    def test_multisite_download_csv_question(self):
+        # make choices
+        choice1 = Choice(title='yes')
+        choice2 = Choice(title='no')
+        # make a question
+        question = Question(
+            title='is this a test',
+            allow_multiple_choice=True, show_results=False)
+        self.polls_index.add_child(instance=question)
+        question.add_child(instance=choice1)
+        question.add_child(instance=choice2)
+        question.save_revision().publish()
+        # make a vote
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
+
+        self.client.post(
+            reverse('molo.polls:vote',
+                    kwargs={'question_id': question.id}),
+            {'choice': [choice1.id, choice2.id]})
+        # should automatically create the poll vote
+        # test poll vote
+        response = self.client.get(
+            ('/admin/polls/question/{0}/'
+             'results/?action=download').format(question.pk))
+
+        print(response.content)
+
+        date = str(datetime.datetime.now().date())
+        expected_output = (
+            'Submission Date,Answer,User\r\n{0},"yes,no",{1}\r\n').format(
+                date,
+                self.superuser_name)
+        print(response.content)
+        self.assertEquals(str(response.content), expected_output)
+
+        # test seperation on multi-site
+
+        # make choices
+        choice1_main2 = Choice(title='yes')
+        # make a question
+        question_main2 = Question(
+            title='is this a test for main2',
+            allow_multiple_choice=True, show_results=False)
+        self.polls_index_main2.add_child(instance=question_main2)
+        question_main2.add_child(instance=choice1_main2)
+        question_main2.save_revision().publish()
+
+        self.client2.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
+        self.client2.post(
+            reverse('molo.polls:vote',
+                    kwargs={'question_id': question_main2.id}),
+            {'choice': [choice1_main2.id]})
+
+        expected_output = (
+            'Submission Date,Answer,User\r\n{0},yes,{1}\r\n').format(
+                date,
+                self.superuser_name)
+
+        response = self.client2.get(
+            ('/admin/polls/question/{0}/'
+             'results/?action=download').format(question_main2.pk))
+        self.assertEquals(str(response.content), expected_output)
