@@ -1,2 +1,1 @@
-molo.core<5.0.0,>=4.3.2
-wagtailmodeladmin
+molo.core<6.0.0,>=5.1.0-beta.1

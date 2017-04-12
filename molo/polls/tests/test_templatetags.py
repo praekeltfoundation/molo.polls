@@ -1,29 +1,19 @@
-from django.test import TestCase
-from django.test.client import Client
 from django.core.urlresolvers import reverse
 
-from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.models import SiteLanguage
+from molo.polls.tests.base import BasePollsTestCase
+from molo.polls.models import (
+    Choice,
+    Question
+)
 
-from molo.polls.models import (Choice, Question, PollsIndexPage)
 
-
-class ModelsTestCase(TestCase, MoloTestCaseMixin):
-
-    def setUp(self):
-        self.user = self.login()
-        self.mk_main()
-        # Create Main language
-        self.english = SiteLanguage.objects.create(locale='en')
-        self.french = SiteLanguage.objects.create(locale='fr')
-        # Create polls index page
-        self.polls_index = PollsIndexPage(title='Polls', slug='polls')
-        self.main.add_child(instance=self.polls_index)
-        self.polls_index.save_revision().publish()
+class TemplateTagTestCase(BasePollsTestCase):
 
     def test_load_polls_in_footer_page(self):
-        client = Client()
-        client.login(username='superuser', password='pass')
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
 
         choice1 = Choice(title='yes')
         question = Question(title='is this a test')
@@ -37,12 +27,14 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
             slug='french-translation-of-is-this-a-test')
         question_fr.save_revision().publish()
 
-        response = client.get('/')
+        response = self.client.get('/')
         self.assertContains(
-            response, '<a href="/polls/7/polls_details/" '
-            'class="footer-link">is this a test</a>', html=True)
+            response,
+            '<a href="/polls/%s/polls_details/" '
+            'class="footer-link">is this a test</a>' % question.id,
+            html=True)
 
-        response = client.get('/polls/%s/' % question.id)
+        response = self.client.get('/polls/%s/' % question.id)
         self.assertContains(response, "yes")
 
         self.client.get('/locale/fr/')
