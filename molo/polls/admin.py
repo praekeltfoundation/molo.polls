@@ -124,5 +124,11 @@ class QuestionsModelAdmin(WagtailModelAdmin, QuestionAdmin):
         url = reverse('question-results-admin', args=(obj.id,))
         return '<a href="%s">%s</a>' % (url, obj)
 
+    def get_queryset(self, request):
+        qs = super(QuestionAdmin, self).get_queryset(request)
+        # Only show questions related to that site
+        main = request.site.root_page
+        return qs.descendant_of(main)
+
     entries.allow_tags = True
     entries.short_description = 'Title'

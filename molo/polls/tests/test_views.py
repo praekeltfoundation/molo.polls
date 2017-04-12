@@ -1,29 +1,48 @@
-from django.test import TestCase
-
-from molo.polls.models import PollsIndexPage
-
-from molo.core.models import SiteLanguage, Main
-from molo.core.tests.base import MoloTestCaseMixin
-
 from bs4 import BeautifulSoup
 
+from molo.core.models import Main
 
-class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
+from molo.polls.tests.base import BasePollsTestCase
+from molo.polls.models import (
+    PollsIndexPage,
+    Question,
+)
 
-    def setUp(self):
-        self.mk_main()
-        self.english = SiteLanguage.objects.create(locale='en')
 
-        self.login()
+class TestMultiSitePolls(BasePollsTestCase):
 
-        # Create polls index page
-        self.polls_index = PollsIndexPage(
-            title='Security Questions',
-            slug='security-questions')
-        self.main.add_child(instance=self.polls_index)
-        self.polls_index.save_revision().publish()
+    def test_multi_site_different_polls(self):
+        # create poll on site 1
+        first_site_poll_text = 'site 1 poll'
+        second_site_poll_text = 'site 2 poll'
+        question_site1 = Question(title=first_site_poll_text)
+        self.polls_index.add_child(instance=question_site1)
+        # create poll on site 2
+        question_site2 = Question(title=second_site_poll_text)
+        self.polls_index_main2.add_child(instance=question_site2)
+
+        # request site 1
+        response = self.client.get('/')
+        self.assertEquals(response.status_code, 200)
+        # check title is there
+        self.assertContains(response, first_site_poll_text)
+        self.assertNotContains(response, second_site_poll_text)
+
+        # request site 2
+        response = self.client2.get('/')
+        self.assertEquals(response.status_code, 200)
+        # check that site 2 poll is there
+        self.assertNotContains(response, first_site_poll_text)
+        self.assertContains(response, second_site_poll_text)
+
+
+class TestDeleteButtonRemoved(BasePollsTestCase):
 
     def test_delete_btn_removed_for_polls_index_page_in_main(self):
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
 
         main_page = Main.objects.first()
         response = self.client.get('/admin/pages/{0}/'
@@ -42,6 +61,11 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
                 self.assertFalse(row.find('a', string='Delete'))
 
     def test_delete_button_removed_from_dropdown_menu(self):
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
+
         polls_index_page = PollsIndexPage.objects.first()
 
         response = self.client.get('/admin/pages/{0}/'
@@ -55,6 +79,11 @@ class TestDeleteButtonRemoved(TestCase, MoloTestCaseMixin):
         self.assertNotContains(response, delete_link, html=True)
 
     def test_delete_button_removed_in_edit_menu(self):
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
+
         polls_index_page = PollsIndexPage.objects.first()
 
         response = self.client.get('/admin/pages/{0}/edit/'

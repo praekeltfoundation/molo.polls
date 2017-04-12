@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import get_language_from_request
 from django.views import generic
+from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 from molo.core.utils import get_locale_code
 from molo.polls.forms import TextVoteForm, VoteForm, NumericalTextVoteForm
@@ -20,6 +21,18 @@ class IndexView(generic.ListView):
         return Question.objects.order_by('-pub_date')[:5]
 
 
+class PollsDetailsView(TemplateView):
+    template_name = 'polls/polls_details.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(
+            PollsDetailsView, self).get_context_data(*args, **kwargs)
+        context.update({
+            'question': Question.objects.get(pk=kwargs.get('question_id'))
+        })
+        return context
+
+
 class DetailView(generic.DetailView):
     model = Question
     template_name = 'polls/detail.html'
@@ -31,7 +44,8 @@ def poll_results(request, poll_id):
     qs = Choice.objects.live().child_of(page).filter(
         languages__language__is_main_language=True)
     locale = get_locale_code(get_language_from_request(request))
-    choices = [(a.get_translation_for(locale) or a, a) for a in qs]
+    choices = [(a.get_translation_for(locale, request.site) or a, a)
+               for a in qs]
     total_votes = sum(c.votes for c in qs)
     choice_color = ['orange', 'purple', 'turq']
     index = 0

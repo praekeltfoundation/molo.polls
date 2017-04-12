@@ -1,25 +1,17 @@
-from django.test import TestCase
 from django.test.client import Client
 from django.core.urlresolvers import reverse
 
-from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.models import SiteLanguage
+from molo.polls.tests.base import BasePollsTestCase
+from molo.polls.models import (
+    Choice,
+    Question,
+    ChoiceVote,
+    FreeTextQuestion,
+    FreeTextVote,
+)
 
-from molo.polls.models import (Choice, Question, ChoiceVote, FreeTextQuestion,
-                               FreeTextVote, PollsIndexPage)
 
-
-class ModelsTestCase(TestCase, MoloTestCaseMixin):
-
-    def setUp(self):
-        self.user = self.login()
-        self.mk_main()
-        # Create Main language
-        self.english = SiteLanguage.objects.create(locale='en')
-        # Create polls index page
-        self.polls_index = PollsIndexPage(title='Polls', slug='polls')
-        self.main.add_child(instance=self.polls_index)
-        self.polls_index.save_revision().publish()
+class VotingTestCase(BasePollsTestCase):
 
     def test_voting_once_only(self):
         # make choices
