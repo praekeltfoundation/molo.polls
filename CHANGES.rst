@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+4.0.0-beta.1
+-----
+- Added multi-site functionality for polls
+
 3.2.0
 -----
 - Added Polls load_polls template tag and new polls_details template file for polls footer headline link
