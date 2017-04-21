@@ -1,7 +1,7 @@
 CHANGE LOG
 ==========
 
-4.0.0-beta.1
+5.0.0
 -----
 - Added multi-site functionality for polls
 
