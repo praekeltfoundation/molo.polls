@@ -19,4 +19,8 @@ urlpatterns = patterns(
     url(r'^(?P<question_id>\d+)/freetextvote/$',
         login_required(views.FreeTextVoteView.as_view()),
         name='free_text_vote'),
+    url(
+        r"^(?P<question_id>\d+)/polls_details/$",
+        login_required(views.PollsDetailsView.as_view()),
+        name="poll_details")
 )

@@ -1,41 +1,33 @@
-from django.test import TestCase
 from django.test.client import Client
 from django.core.urlresolvers import reverse
 
-from molo.core.models import SiteLanguage, SectionPage
-from molo.core.tests.base import MoloTestCaseMixin
+from molo.core.models import SectionIndexPage, SectionPage
 
-from molo.polls.models import Choice, Question, ChoiceVote, PollsIndexPage
+from molo.polls.tests.base import BasePollsTestCase
+from molo.polls.models import (
+    Choice,
+    Question,
+    ChoiceVote,
+)
 
 
-class ModelsTestCase(MoloTestCaseMixin, TestCase):
-
-    def setUp(self):
-        self.user = self.login()
-        self.mk_main()
-        # Creates Main language
-        self.english = SiteLanguage.objects.create(locale='en')
-        # Create polls index page
-        self.polls_index = PollsIndexPage(title='Polls', slug='polls')
-        self.main.add_child(instance=self.polls_index)
-        self.polls_index.save_revision().publish()
+class ModelsTestCase(BasePollsTestCase):
 
     def test_section_page_question(self):
-        section = SectionPage(
-            title='section', slug='section', extra_style_hints='purple')
-        self.main.add_child(instance=section)
-        section.save_revision().publish()
-
+        self.assertEqual(SectionPage.objects.count(), 0)
+        section = self.mk_section(
+            SectionIndexPage.objects.child_of(self.main).first(),
+            title='test-section',
+            slug='test-section',
+            extra_style_hints='purple'
+        )
+        self.assertEqual(SectionPage.objects.count(), 1)
         question = Question(title='is this a test')
         section.add_child(instance=question)
         question.save_revision().publish()
-        # make a vote
-        client = Client()
-        client.login(username='superuser', password='pass')
-        response = client.get('/')
-        self.assertContains(response, 'section')
+
         response = self.client.get(
-            '/section/')
+            section.url)
         self.assertContains(response, "is this a test")
         self.assertEquals(section.get_effective_extra_style_hints(), 'purple')
         self.assertEquals(question.get_effective_extra_style_hints(), 'purple')

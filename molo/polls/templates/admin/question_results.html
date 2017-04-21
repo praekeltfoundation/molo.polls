@@ -1,11 +1,11 @@
 {% extends "wagtailadmin/base.html" %}
-{% load i18n wagtailmodeladmin_tags admin_static admin_modify %}
-{% load admin_urls %}
+{% load i18n modeladmin_tags %}
 
 {% block titletag %}{{ view.get_meta_title }}{% endblock %}
 
-{% block extra_css %}
-    {{ view.media.css }}
+{% block css %}
+     {{ block.super }}
+     {{ view.media.css }}
 {% endblock %}
 
 {% block extra_js %}
@@ -34,7 +34,7 @@
     {% endblock %}
 
     {% block content_main %}
-        <div id="content-main">
+        <div>
             <div class="row nice-padding">
                 {% block content_cols %}
                     <table class="listing">

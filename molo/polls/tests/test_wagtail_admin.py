@@ -1,46 +1,40 @@
 from datetime import datetime
 
-from django.contrib.auth.models import User
 from django.utils.formats import date_format
-from django.test import TestCase, Client
-from molo.core.models import SiteLanguage
-from molo.core.tests.base import MoloTestCaseMixin
-from molo.polls.models import Choice, Question, FreeTextQuestion,\
-    FreeTextVote, PollsIndexPage, ChoiceVote
+
+from molo.polls.tests.base import BasePollsTestCase
+from molo.polls.models import (
+    Choice,
+    Question,
+    FreeTextQuestion,
+    FreeTextVote,
+    ChoiceVote,
+)
 
 
-class TestQuestionResultsAdminView(TestCase, MoloTestCaseMixin):
-    def setUp(self):
-        self.superuser = User.objects.create_superuser(
-            username='superuser',
-            email='admin@example.com',
-            password='0000',
-            is_staff=True)
-
-        self.mk_main()
-
-        # Create Main language
-        self.english = SiteLanguage.objects.create(locale='en')
-
-        # Create polls index page
-        self.polls_index = PollsIndexPage(title='Polls', slug='polls')
-        self.main.add_child(instance=self.polls_index)
-        self.polls_index.save_revision().publish()
-
-        self.client = Client()
-        self.client.login(username='superuser', password='0000')
+class TestQuestionResultsAdminView(BasePollsTestCase):
 
     def test_question_appears_in_wagtail_admin(self):
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
+
         question = Question(title='is this a test')
         self.polls_index.add_child(instance=question)
 
         response = self.client.get(
-            '/admin/modeladmin/polls/question/'
+            '/admin/polls/question/'
         )
 
         self.assertContains(response, question.title)
 
     def test_question_results_view(self):
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
+
         question = Question(title='is this a test')
         self.polls_index.add_child(instance=question)
 
@@ -80,12 +74,19 @@ class TestQuestionResultsAdminView(TestCase, MoloTestCaseMixin):
 
         expected_output = (
             'Submission Date,Answer,User\r\n'
-            '%s,yes,superuser\r\n' % datetime.today().strftime('%Y-%m-%d')
-        )
+            '{0},yes,{1}\r\n'
+        ).format(
+            datetime.today().strftime('%Y-%m-%d'),
+            self.superuser_name)
 
         self.assertContains(response, expected_output)
 
     def test_freetextquestion_results_view(self):
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
+
         question = FreeTextQuestion(title='is this a test')
         self.polls_index.add_child(instance=question)
         question.save_revision().publish()
@@ -119,8 +120,45 @@ class TestQuestionResultsAdminView(TestCase, MoloTestCaseMixin):
 
         expected_output = (
             'Submission Date,Answer,User\r\n'
-            '%s,yeah probably,superuser\r\n'
-            % datetime.today().strftime('%Y-%m-%d')
-        )
+            '{0},yeah probably,{1}\r\n'
+        ).format(
+            datetime.today().strftime('%Y-%m-%d'),
+            self.superuser_name)
 
         self.assertContains(response, expected_output)
+
+    def test_multisite_wagtail_admin(self):
+
+        question = Question(
+            title='poll for main1',
+            allow_multiple_choice=True, show_results=False)
+        self.polls_index.add_child(instance=question)
+
+        question_main2 = Question(
+            title='poll for main2',
+            allow_multiple_choice=True, show_results=False)
+        self.polls_index_main2.add_child(instance=question_main2)
+
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
+
+        response = self.client.get(
+            '/admin/polls/question/'
+        )
+
+        self.assertContains(response, question.title)
+        self.assertNotContains(response, question_main2.title)
+
+        self.client2.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
+
+        response = self.client2.get(
+            '/admin/polls/question/'
+        )
+
+        self.assertContains(response, question_main2.title)
+        self.assertNotContains(response, question.title)
