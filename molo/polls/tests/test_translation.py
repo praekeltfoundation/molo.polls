@@ -39,7 +39,7 @@ class TranslationTestCase(BasePollsTestCase):
             password=self.superuser_password
         )
 
-        choice1 = Choice(title='yes')
+        choice1 = self.make_choice()
         question = Question(title='is this a test')
         self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
@@ -63,7 +63,7 @@ class TranslationTestCase(BasePollsTestCase):
             password=self.superuser_password
         )
 
-        choice1 = Choice(title='yes')
+        choice1 = self.make_choice()
         question = Question(title='is this a test')
         self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
@@ -87,7 +87,7 @@ class TranslationTestCase(BasePollsTestCase):
             password=self.superuser_password
         )
 
-        choice1 = Choice(title='yes')
+        choice1 = self.make_choice()
         question = Question(title='is this a test')
         self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)

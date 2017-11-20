@@ -3,7 +3,6 @@ from django.core.urlresolvers import reverse
 
 from molo.polls.tests.base import BasePollsTestCase
 from molo.polls.models import (
-    Choice,
     Question,
     ChoiceVote,
     FreeTextQuestion,
@@ -15,7 +14,7 @@ class VotingTestCase(BasePollsTestCase):
 
     def test_voting_once_only(self):
         # make choices
-        choice1 = Choice(title='yes')
+        choice1 = self.make_choice()
         # make a question
         question = Question(title='is this a test')
         self.polls_index.add_child(instance=question)
@@ -54,8 +53,8 @@ class VotingTestCase(BasePollsTestCase):
 
     def test_multiple_options(self):
         # make choices
-        choice1 = Choice(title='yes')
-        choice2 = Choice(title='no')
+        choice1 = self.make_choice(title='yes')
+        choice2 = self.make_choice(title='no')
         # make a question
         question = Question(
             title='is this a test',
@@ -82,7 +81,7 @@ class VotingTestCase(BasePollsTestCase):
 
     def test_results_as_total(self):
         # make choices
-        choice1 = Choice(title='yes')
+        choice1 = self.make_choice()
         # make a question
         question = Question(
             title='is this a test', result_as_percentage=False)
@@ -106,7 +105,7 @@ class VotingTestCase(BasePollsTestCase):
 
     def test_show_results(self):
         # make choices
-        choice1 = Choice(title='yes')
+        choice1 = self.make_choice()
         # make a question
         question = Question(
             title='is this a test', show_results=False)

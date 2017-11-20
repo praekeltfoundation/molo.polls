@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 
@@ -7,7 +9,7 @@ from molo.core.models import (
     SiteLanguageRelation,
     Languages
 )
-from molo.polls.models import PollsIndexPage
+from molo.polls.models import Choice, PollsIndexPage
 
 
 class BasePollsTestCase(TestCase, MoloTestCaseMixin):
@@ -57,3 +59,6 @@ class BasePollsTestCase(TestCase, MoloTestCaseMixin):
 
         self.mk_main2(title='main3', slug='main3', path=00010003)
         self.client2 = Client(HTTP_HOST=self.main2.get_site().hostname)
+
+    def make_choice(self, title='yes'):
+        return Choice(title=title, latest_revision_created_at=datetime.now())
