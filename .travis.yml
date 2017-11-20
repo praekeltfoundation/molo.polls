@@ -4,7 +4,6 @@ python:
   - "2.7"
 cache: pip
 install:
-  - pip install twine
   - pip install --upgrade pip
   - pip install coveralls coverage
   - pip install -r requirements-dev.txt
@@ -22,6 +21,8 @@ script:
   - py.test --cov=molo
 after_success:
   - coveralls
+before_deploy:
+  - pip install twine
 deploy:
   provider: pypi
   user: Praekelt
