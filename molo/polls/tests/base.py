@@ -55,7 +55,7 @@ class BasePollsTestCase(TestCase, MoloTestCaseMixin):
         self.polls_index_main2 = PollsIndexPage.objects.child_of(
             self.main2).first()
 
-        self.mk_main2(title='main3', slug='main3', path=00010003)
+        self.mk_main2(title='main3', slug='main3', path='4099')
         self.client2 = Client(HTTP_HOST=self.main2.get_site().hostname)
 
     def make_choice(self, parent, title='yes'):
