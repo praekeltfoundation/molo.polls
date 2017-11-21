@@ -7,7 +7,7 @@ from molo.core.models import (
     SiteLanguageRelation,
     Languages
 )
-from molo.polls.models import PollsIndexPage
+from molo.polls.models import Choice, PollsIndexPage
 
 
 class BasePollsTestCase(TestCase, MoloTestCaseMixin):
@@ -57,3 +57,9 @@ class BasePollsTestCase(TestCase, MoloTestCaseMixin):
 
         self.mk_main2(title='main3', slug='main3', path=00010003)
         self.client2 = Client(HTTP_HOST=self.main2.get_site().hostname)
+
+    def make_choice(self, parent, title='yes'):
+        choice = Choice(title=title)
+        parent.add_child(instance=choice)
+        choice.save_revision().publish()
+        return choice
