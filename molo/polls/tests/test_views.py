@@ -17,9 +17,12 @@ class TestMultiSitePolls(BasePollsTestCase):
         second_site_poll_text = 'site 2 poll'
         question_site1 = Question(title=first_site_poll_text)
         self.polls_index.add_child(instance=question_site1)
+        question_site1.save_revision().publish()
+
         # create poll on site 2
         question_site2 = Question(title=second_site_poll_text)
         self.polls_index_main2.add_child(instance=question_site2)
+        question_site2.save_revision().publish()
 
         # request site 1
         response = self.client.get('/')

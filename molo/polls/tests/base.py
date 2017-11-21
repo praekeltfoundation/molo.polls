@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 
@@ -60,5 +58,8 @@ class BasePollsTestCase(TestCase, MoloTestCaseMixin):
         self.mk_main2(title='main3', slug='main3', path=00010003)
         self.client2 = Client(HTTP_HOST=self.main2.get_site().hostname)
 
-    def make_choice(self, title='yes'):
-        return Choice(title=title, latest_revision_created_at=datetime.now())
+    def make_choice(self, parent, title='yes'):
+        choice = Choice(title=title)
+        parent.add_child(instance=choice)
+        choice.save_revision().publish()
+        return choice

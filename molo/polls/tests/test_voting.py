@@ -13,13 +13,12 @@ from molo.polls.models import (
 class VotingTestCase(BasePollsTestCase):
 
     def test_voting_once_only(self):
-        # make choices
-        choice1 = self.make_choice()
         # make a question
         question = Question(title='is this a test')
         self.polls_index.add_child(instance=question)
-        question.add_child(instance=choice1)
         question.save_revision().publish()
+        # make choices
+        choice1 = self.make_choice(parent=question)
         # make a vote
         client = Client()
         client.login(username='superuser', password='pass')
@@ -52,17 +51,15 @@ class VotingTestCase(BasePollsTestCase):
         self.assertContains(response, '100%')
 
     def test_multiple_options(self):
-        # make choices
-        choice1 = self.make_choice(title='yes')
-        choice2 = self.make_choice(title='no')
         # make a question
         question = Question(
             title='is this a test',
             allow_multiple_choice=True, show_results=False)
         self.polls_index.add_child(instance=question)
-        question.add_child(instance=choice1)
-        question.add_child(instance=choice2)
         question.save_revision().publish()
+        # make choices
+        choice1 = self.make_choice(title='yes', parent=question)
+        choice2 = self.make_choice(title='no', parent=question)
         # make a vote
         client = Client()
         client.login(username='superuser', password='pass')
@@ -80,14 +77,13 @@ class VotingTestCase(BasePollsTestCase):
         self.assertContains(response, 'You voted: yes, no')
 
     def test_results_as_total(self):
-        # make choices
-        choice1 = self.make_choice()
         # make a question
         question = Question(
             title='is this a test', result_as_percentage=False)
         self.polls_index.add_child(instance=question)
-        question.add_child(instance=choice1)
         question.save_revision().publish()
+        # make choices
+        choice1 = self.make_choice(parent=question)
         # make a vote
         client = Client()
         client.login(username='superuser', password='pass')
@@ -104,14 +100,13 @@ class VotingTestCase(BasePollsTestCase):
         self.assertContains(response, '1 vote')
 
     def test_show_results(self):
-        # make choices
-        choice1 = self.make_choice()
         # make a question
         question = Question(
             title='is this a test', show_results=False)
         self.polls_index.add_child(instance=question)
-        question.add_child(instance=choice1)
         question.save_revision().publish()
+        # make choices
+        choice1 = self.make_choice(parent=question)
         # make a vote
         client = Client()
         client.login(username='superuser', password='pass')
