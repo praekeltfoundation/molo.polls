@@ -1,11 +1,10 @@
 from molo.polls import views
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^$', views.IndexView.as_view(), name='index'),
     url(r'^(?P<pk>\d+)/$', views.DetailView.as_view(), name='detail'),
     url(
@@ -23,4 +22,4 @@ urlpatterns = patterns(
         r"^(?P<question_id>\d+)/polls_details/$",
         login_required(views.PollsDetailsView.as_view()),
         name="poll_details")
-)
+]

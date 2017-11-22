@@ -39,11 +39,10 @@ class TranslationTestCase(BasePollsTestCase):
             password=self.superuser_password
         )
 
-        choice1 = Choice(title='yes')
         question = Question(title='is this a test')
         self.polls_index.add_child(instance=question)
-        question.add_child(instance=choice1)
         question.save_revision().publish()
+        choice1 = self.make_choice(parent=question)
         self.client.post(reverse(
             'add_translation', args=[choice1.id, 'fr']))
         page = Choice.objects.get(
@@ -63,11 +62,10 @@ class TranslationTestCase(BasePollsTestCase):
             password=self.superuser_password
         )
 
-        choice1 = Choice(title='yes')
         question = Question(title='is this a test')
         self.polls_index.add_child(instance=question)
-        question.add_child(instance=choice1)
         question.save_revision().publish()
+        choice1 = self.make_choice(parent=question)
         self.client.post(reverse(
             'add_translation', args=[choice1.id, 'fr']))
         page = Choice.objects.get(
@@ -87,11 +85,10 @@ class TranslationTestCase(BasePollsTestCase):
             password=self.superuser_password
         )
 
-        choice1 = Choice(title='yes')
         question = Question(title='is this a test')
         self.polls_index.add_child(instance=question)
-        question.add_child(instance=choice1)
         question.save_revision().publish()
+        choice1 = self.make_choice(parent=question)
         self.client.post(reverse(
             'add_translation', args=[choice1.id, 'fr']))
         page = Choice.objects.get(
