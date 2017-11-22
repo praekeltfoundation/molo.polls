@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+6.0.0-beta.1
+------------
+- Upgrade to Django 1.10, Molo 6
+
 5.0.1
 -----
 - Pin molo core to >=5.0.0
