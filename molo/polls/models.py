@@ -1,17 +1,47 @@
 from django.db import models
-from wagtail.wagtailcore.models import Page
-from wagtail.wagtailadmin.edit_handlers import (
-    FieldPanel, MultiFieldPanel, FieldRowPanel)
-from molo.core.models import LanguagePage, ArticlePage, SectionPage
+from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
+from wagtail.wagtailcore.models import Page
+from wagtail.wagtailadmin.edit_handlers import (
+    FieldPanel, MultiFieldPanel, FieldRowPanel,
+)
 
-LanguagePage.subpage_types += ['polls.Question', 'polls.FreeTextQuestion']
+from molo.core.utils import generate_slug
+from molo.core.models import (
+    Main, ArticlePage, SectionPage, TranslatablePageMixinNotRoutable,
+    PreventDeleteMixin, index_pages_after_copy,
+)
+
 SectionPage.subpage_types += ['polls.Question', 'polls.FreeTextQuestion']
 ArticlePage.subpage_types += ['polls.Question', 'polls.FreeTextQuestion']
 
 
-class Question(Page):
+class PollsIndexPage(Page, PreventDeleteMixin):
+    parent_page_types = ['core.Main']
+    subpage_types = ['polls.Question', 'polls.FreeTextQuestion']
+
+    def copy(self, *args, **kwargs):
+        site = kwargs['to'].get_site()
+        main = site.root_page
+        PollsIndexPage.objects.child_of(main).delete()
+        super(PollsIndexPage, self).copy(*args, **kwargs)
+
+
+@receiver(index_pages_after_copy, sender=Main)
+def create_polls_index_page(sender, instance, **kwargs):
+    if not instance.get_children().filter(
+            title='Polls').exists():
+        polls_index = PollsIndexPage(
+            title='Polls', slug=('polls-%s' % (
+                generate_slug(instance.title), )))
+        instance.add_child(instance=polls_index)
+        polls_index.save_revision().publish()
+
+
+class Question(TranslatablePageMixinNotRoutable, Page):
+    parent_page_types = [
+        'polls.PollsIndexPage', 'core.SectionPage', 'core.ArticlePage']
     subpage_types = ['polls.Choice']
     short_name = models.TextField(
         null=True, blank=True,
@@ -54,13 +84,12 @@ class Question(Page):
                 "Question Settings",))]
 
     def user_choice(self, user):
-        self.choicevote_set.filter(user=user)
         return ChoiceVote.objects.get(
             user=user, question__id=self.id).choice
 
     def can_vote(self, user):
         return not (ChoiceVote.objects.filter(
-            user=user, question__id=self.id).exists())
+            user=user, question__id=self.get_main_language_page().id).exists())
 
     def choices(self):
         if self.randomise_options:
@@ -80,6 +109,7 @@ class Question(Page):
                     parent_article  .get_effective_extra_style_hints()
         return self.extra_style_hints
 
+
 Question.settings_panels = [
     MultiFieldPanel(
         [FieldRowPanel(
@@ -89,6 +119,8 @@ Question.settings_panels = [
 
 
 class FreeTextQuestion(Question):
+    parent_page_types = [
+        'polls.PollsIndexPage', 'core.SectionPage', 'core.ArticlePage']
     subpage_types = []
     content_panels = Page.content_panels
     numerical = models.BooleanField(
@@ -105,10 +137,11 @@ class FreeTextQuestion(Question):
 
     def can_vote(self, user):
         return not (FreeTextVote.objects.filter(
-            user=user, question__id=self.id).exists())
+            user=user, question__id=self.get_main_language_page().id).exists())
 
 
-class Choice(Page):
+class Choice(TranslatablePageMixinNotRoutable, Page):
+    parent_page_types = ['polls.Question']
     subpage_types = []
     votes = models.IntegerField(default=0)
     choice_votes = models.ManyToManyField('ChoiceVote',

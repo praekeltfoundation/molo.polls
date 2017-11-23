@@ -1,12 +1,15 @@
-from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.db.models import F
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.utils.translation import get_language_from_request
 from django.views import generic
+from django.views.generic import TemplateView
+from django.views.generic.edit import FormView
+from molo.core.utils import get_locale_code
+from molo.polls.forms import TextVoteForm, VoteForm, NumericalTextVoteForm
 from molo.polls.models import (
     Choice, Question, FreeTextVote, ChoiceVote, FreeTextQuestion)
-from django .db.models import F
-from django.views.generic.edit import FormView
-from molo.polls.forms import TextVoteForm, VoteForm, NumericalTextVoteForm
 
 
 class IndexView(generic.ListView):
@@ -18,6 +21,18 @@ class IndexView(generic.ListView):
         return Question.objects.order_by('-pub_date')[:5]
 
 
+class PollsDetailsView(TemplateView):
+    template_name = 'polls/polls_details.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(
+            PollsDetailsView, self).get_context_data(*args, **kwargs)
+        context.update({
+            'question': Question.objects.get(pk=kwargs.get('question_id'))
+        })
+        return context
+
+
 class DetailView(generic.DetailView):
     model = Question
     template_name = 'polls/detail.html'
@@ -25,16 +40,21 @@ class DetailView(generic.DetailView):
 
 def poll_results(request, poll_id):
     question = get_object_or_404(Question, pk=poll_id)
-    choices = list(question.choices())
-    total_votes = sum(c.votes for c in choices)
+    page = question.get_main_language_page()
+    qs = Choice.objects.live().child_of(page).filter(
+        languages__language__is_main_language=True)
+    locale = get_locale_code(get_language_from_request(request))
+    choices = [(a.get_translation_for(locale, request.site) or a, a)
+               for a in qs]
+    total_votes = sum(c.votes for c in qs)
     choice_color = ['orange', 'purple', 'turq']
     index = 0
-    for choice in choices:
+    for choice, main_choice in choices:
         vote_percentage = 0
         if index >= len(choice_color):
             index = 0
-        if choice.votes > 0:
-            vote_percentage = int(choice.votes * 100.0 / total_votes)
+        if main_choice.votes > 0:
+            vote_percentage = int(main_choice.votes * 100.0 / total_votes)
         choice.percentage = vote_percentage
         choice.color = choice_color[index]
         index += 1
@@ -42,7 +62,8 @@ def poll_results(request, poll_id):
     context = {
         'question': question,
         'total': total_votes,
-        'choices': sorted(choices, key=lambda x: x.percentage, reverse=True)
+        'choices': sorted(
+            [c for c, m in choices], key=lambda x: x.percentage, reverse=True)
     }
     return render(request, 'polls/results.html', context,)
 
@@ -63,6 +84,7 @@ class VoteView(FormView):
     def form_valid(self, form, *args, **kwargs):
         question_id = self.kwargs.get('question_id')
         question = get_object_or_404(Question, pk=question_id)
+        question = question.get_main_language_page().specific
         obj, created = ChoiceVote.objects.get_or_create(
             user=self.request.user,
             question=question,)
@@ -70,9 +92,10 @@ class VoteView(FormView):
         if created:
             selected_choice = form.cleaned_data['choice']
             for choice_pk in selected_choice:
+                Choice.objects.filter(
+                    pk=choice_pk).update(votes=F('votes') + 1)
                 choice = Choice.objects.get(pk=choice_pk)
                 obj.choice.add(choice)
-                choice.votes = F('votes') + 1
                 choice.choice_votes.add(obj)
                 choice.save()
         return HttpResponseRedirect(
@@ -102,6 +125,7 @@ class FreeTextVoteView(FormView):
     def form_valid(self, form, *args, **kwargs):
         question_id = self.kwargs.get('question_id')
         question = get_object_or_404(FreeTextQuestion, pk=question_id)
+        question = question.get_main_language_page().specific
         FreeTextVote.objects.get_or_create(
             user=self.request.user,
             question=question,
