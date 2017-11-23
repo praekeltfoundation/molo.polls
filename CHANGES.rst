@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+6.0.1-beta.1
+------------
+- Upgrade to Django 1.10, Molo 6
+
 6.0.0-beta.1
 ------------
 - Upgrade to Django 1.10, Molo 6
