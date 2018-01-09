@@ -11,4 +11,5 @@ htmlcov/
 .cache
 .DS_Store
 
+-# PyCharm / IntelliJ
 .idea/
