@@ -1,34 +1,24 @@
-from django.test import TestCase
 from django.test.client import Client
 from django.core.urlresolvers import reverse
 
-from molo.core.tests.base import MoloTestCaseMixin
-from molo.core.models import SiteLanguage
+from molo.polls.tests.base import BasePollsTestCase
+from molo.polls.models import (
+    Question,
+    ChoiceVote,
+    FreeTextQuestion,
+    FreeTextVote,
+)
 
-from molo.polls.models import (Choice, Question, ChoiceVote, FreeTextQuestion,
-                               FreeTextVote, PollsIndexPage)
 
-
-class ModelsTestCase(TestCase, MoloTestCaseMixin):
-
-    def setUp(self):
-        self.user = self.login()
-        self.mk_main()
-        # Create Main language
-        self.english = SiteLanguage.objects.create(locale='en')
-        # Create polls index page
-        self.polls_index = PollsIndexPage(title='Polls', slug='polls')
-        self.main.add_child(instance=self.polls_index)
-        self.polls_index.save_revision().publish()
+class VotingTestCase(BasePollsTestCase):
 
     def test_voting_once_only(self):
-        # make choices
-        choice1 = Choice(title='yes')
         # make a question
         question = Question(title='is this a test')
         self.polls_index.add_child(instance=question)
-        question.add_child(instance=choice1)
         question.save_revision().publish()
+        # make choices
+        choice1 = self.make_choice(parent=question)
         # make a vote
         client = Client()
         client.login(username='superuser', password='pass')
@@ -61,17 +51,15 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         self.assertContains(response, '100%')
 
     def test_multiple_options(self):
-        # make choices
-        choice1 = Choice(title='yes')
-        choice2 = Choice(title='no')
         # make a question
         question = Question(
             title='is this a test',
             allow_multiple_choice=True, show_results=False)
         self.polls_index.add_child(instance=question)
-        question.add_child(instance=choice1)
-        question.add_child(instance=choice2)
         question.save_revision().publish()
+        # make choices
+        choice1 = self.make_choice(title='yes', parent=question)
+        choice2 = self.make_choice(title='no', parent=question)
         # make a vote
         client = Client()
         client.login(username='superuser', password='pass')
@@ -89,14 +77,13 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'You voted: yes, no')
 
     def test_results_as_total(self):
-        # make choices
-        choice1 = Choice(title='yes')
         # make a question
         question = Question(
             title='is this a test', result_as_percentage=False)
         self.polls_index.add_child(instance=question)
-        question.add_child(instance=choice1)
         question.save_revision().publish()
+        # make choices
+        choice1 = self.make_choice(parent=question)
         # make a vote
         client = Client()
         client.login(username='superuser', password='pass')
@@ -113,14 +100,13 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         self.assertContains(response, '1 vote')
 
     def test_show_results(self):
-        # make choices
-        choice1 = Choice(title='yes')
         # make a question
         question = Question(
             title='is this a test', show_results=False)
         self.polls_index.add_child(instance=question)
-        question.add_child(instance=choice1)
         question.save_revision().publish()
+        # make choices
+        choice1 = self.make_choice(parent=question)
         # make a vote
         client = Client()
         client.login(username='superuser', password='pass')
