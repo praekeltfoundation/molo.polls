@@ -41,20 +41,13 @@ class AdminTestCase(BasePollsTestCase):
                                    None,
                                    Question.objects.all())
         date = str(datetime.datetime.now().date())
-        expected_output = (('Content-Type: text/csv\r\nContent-Disposition:'
-                            ' attachment;filename=questions-{0}'
-                            '.csv\r\n\r\n'
-                            'title,date_submitted,user,answer'
+        expected_output = (('title,date_submitted,user,answer'
                             '\r\nis this a test,{0},{1},'
                             '"yes,no"\r\n').format(
                                 date,
                                 self.superuser_name))
-        self.assertEquals(str(response), expected_output)
 
-        self.client2.login(
-            username=self.superuser_name,
-            password=self.superuser_password
-        )
+        self.assertEquals(response.content.decode("utf-8"), expected_output)
 
     def test_choice_short_name(self):
         # make choices
@@ -84,15 +77,12 @@ class AdminTestCase(BasePollsTestCase):
                                    None,
                                    Question.objects.all())
         date = str(datetime.datetime.now().date())
-        expected_output = (('Content-Type: text/csv\r\nContent-Disposition:'
-                            ' attachment;filename=questions-{0}'
-                            '.csv\r\n\r\n'
-                            'title,date_submitted,user,answer'
+        expected_output = (('title,date_submitted,user,answer'
                             '\r\nis this a test,{0},{1},'
                             '"y,n"\r\n').format(
                                 date,
                                 self.superuser_name))
-        self.assertEquals(str(response), expected_output)
+        self.assertEquals(response.content.decode("utf-8"), expected_output)
 
     def test_choice_short_name_single_choice(self):
         # make choices
@@ -120,15 +110,12 @@ class AdminTestCase(BasePollsTestCase):
                                    None,
                                    Question.objects.all())
         date = str(datetime.datetime.now().date())
-        expected_output = (('Content-Type: text/csv\r\nContent-Disposition:'
-                            ' attachment;filename=questions-{0}'
-                            '.csv\r\n\r\n'
-                            'title,date_submitted,user,answer'
+        expected_output = (('title,date_submitted,user,answer'
                             '\r\nis this a test,{0},{1},'
                             'y\r\n').format(
                                 date,
                                 self.superuser_name))
-        self.assertEquals(str(response), expected_output)
+        self.assertEquals(response.content.decode("utf-8"), expected_output)
 
     def test_download_csv_free_text_question(self):
         question = FreeTextQuestion(
@@ -151,15 +138,12 @@ class AdminTestCase(BasePollsTestCase):
                                    None,
                                    Question.objects.all())
         date = str(datetime.datetime.now().date())
-        expected_output = (('Content-Type: text/csv\r\nContent-Disposition:'
-                            ' attachment;filename=questions-{0}'
-                            '.csv\r\n\r\n'
-                            'title,date_submitted,user,answer'
+        expected_output = (('title,date_submitted,user,answer'
                             '\r\nis this a test,{0},{1},'
                             'this is an answer\r\n').format(
                                 date,
                                 self.superuser_name))
-        self.assertEquals(str(response), expected_output)
+        self.assertEquals(response.content.decode("utf-8"), expected_output)
 
     def test_download_csv_free_text_question_short_name(self):
         question = FreeTextQuestion(
@@ -182,15 +166,12 @@ class AdminTestCase(BasePollsTestCase):
                                    None,
                                    Question.objects.all())
         date = str(datetime.datetime.now().date())
-        expected_output = (('Content-Type: text/csv\r\nContent-Disposition:'
-                            ' attachment;filename=questions-{0}'
-                            '.csv\r\n\r\n'
-                            'title,date_submitted,user,answer'
+        expected_output = (('title,date_submitted,user,answer'
                             '\r\nshort,{0},{1},'
                             'this is an answer\r\n').format(
                                 date,
                                 self.superuser_name))
-        self.assertEquals(str(response), expected_output)
+        self.assertEquals(response.content.decode("utf-8"), expected_output)
 
     def test_multisite_download_csv_question(self):
         # make choices
@@ -225,7 +206,7 @@ class AdminTestCase(BasePollsTestCase):
             'Submission Date,Answer,User\r\n{0},"yes,no",{1}\r\n').format(
                 date,
                 self.superuser_name)
-        self.assertEquals(str(response.content), expected_output)
+        self.assertEquals(response.content.decode("utf-8"), expected_output)
 
         # test seperation on multi-site
 
@@ -256,4 +237,4 @@ class AdminTestCase(BasePollsTestCase):
         response = self.client2.get(
             ('/admin/polls/question/{0}/'
              'results/?action=download').format(question_main2.pk))
-        self.assertEquals(str(response.content), expected_output)
+        self.assertEquals(response.content.decode("utf-8"), expected_output)
