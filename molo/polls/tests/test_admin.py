@@ -47,7 +47,7 @@ class AdminTestCase(BasePollsTestCase):
                                 date,
                                 self.superuser_name))
 
-        self.assertEquals(response.content.decode("utf-8"), expected_output)
+        self.assertContains(response, expected_output)
 
     def test_choice_short_name(self):
         # make choices
@@ -82,7 +82,7 @@ class AdminTestCase(BasePollsTestCase):
                             '"y,n"\r\n').format(
                                 date,
                                 self.superuser_name))
-        self.assertEquals(response.content.decode("utf-8"), expected_output)
+        self.assertContains(response, expected_output)
 
     def test_choice_short_name_single_choice(self):
         # make choices
@@ -115,7 +115,7 @@ class AdminTestCase(BasePollsTestCase):
                             'y\r\n').format(
                                 date,
                                 self.superuser_name))
-        self.assertEquals(response.content.decode("utf-8"), expected_output)
+        self.assertContains(response, expected_output)
 
     def test_download_csv_free_text_question(self):
         question = FreeTextQuestion(
@@ -143,7 +143,7 @@ class AdminTestCase(BasePollsTestCase):
                             'this is an answer\r\n').format(
                                 date,
                                 self.superuser_name))
-        self.assertEquals(response.content.decode("utf-8"), expected_output)
+        self.assertContains(response, expected_output)
 
     def test_download_csv_free_text_question_short_name(self):
         question = FreeTextQuestion(
@@ -171,7 +171,7 @@ class AdminTestCase(BasePollsTestCase):
                             'this is an answer\r\n').format(
                                 date,
                                 self.superuser_name))
-        self.assertEquals(response.content.decode("utf-8"), expected_output)
+        self.assertContains(response, expected_output)
 
     def test_multisite_download_csv_question(self):
         # make choices
@@ -206,7 +206,7 @@ class AdminTestCase(BasePollsTestCase):
             'Submission Date,Answer,User\r\n{0},"yes,no",{1}\r\n').format(
                 date,
                 self.superuser_name)
-        self.assertEquals(response.content.decode("utf-8"), expected_output)
+        self.assertContains(response, expected_output)
 
         # test seperation on multi-site
 
@@ -237,4 +237,4 @@ class AdminTestCase(BasePollsTestCase):
         response = self.client2.get(
             ('/admin/polls/question/{0}/'
              'results/?action=download').format(question_main2.pk))
-        self.assertEquals(response.content.decode("utf-8"), expected_output)
+        self.assertContains(response, expected_output)
