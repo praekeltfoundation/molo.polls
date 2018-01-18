@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+6.2.0
+-----
+
+- Support Python 3
+
 6.1.0
 -----
 - add support for Django 1.11
