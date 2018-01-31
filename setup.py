@@ -4,10 +4,10 @@ with open('README.rst') as readme_file:
     readme = readme_file.read()
 
 with open('requirements.txt') as req_file:
-    requires = req_file.read().split('\n')
+    requires = [req for req in req_file.read().split('\n') if req]
 
 with open('requirements-dev.txt') as req_file:
-    requires_dev = req_file.read().split('\n')
+    requires_dev = [req for req in req_file.read().split('\n') if req]
 
 with open('VERSION') as fp:
     version = fp.read().strip()
