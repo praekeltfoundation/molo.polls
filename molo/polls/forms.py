@@ -1,5 +1,6 @@
+from .models import Choice
+
 from django import forms
-from models import Choice
 from django.utils.translation import ugettext_lazy as _
 
 
