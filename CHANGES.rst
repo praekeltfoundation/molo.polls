@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+6.4.0
+-----
+- Add M&E Expert to polls entries permissions
+
 6.3.0
 -----
 - Replace Page with MoloPage proxy
