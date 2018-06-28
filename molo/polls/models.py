@@ -4,26 +4,22 @@ from django.utils.translation import ugettext_lazy as _
 
 from wagtail.wagtailcore.models import Page
 from wagtail.wagtailadmin.edit_handlers import (
-    FieldPanel,
-    MultiFieldPanel,
-    FieldRowPanel,
+    FieldPanel, MultiFieldPanel, FieldRowPanel,
 )
 
 from molo.core.utils import generate_slug
 from molo.core.models import (
-    Main,
-    ArticlePage,
-    SectionPage,
-    TranslatablePageMixinNotRoutable,
-    PreventDeleteMixin,
-    index_pages_after_copy,
+    Main, ArticlePage, SectionPage, TranslatablePageMixinNotRoutable,
+    PreventDeleteMixin, index_pages_after_copy,
 )
+from molo.core.molo_wagtail_models import MoloPage
+
 
 SectionPage.subpage_types += ['polls.Question', 'polls.FreeTextQuestion']
 ArticlePage.subpage_types += ['polls.Question', 'polls.FreeTextQuestion']
 
 
-class PollsIndexPage(Page, PreventDeleteMixin):
+class PollsIndexPage(MoloPage, PreventDeleteMixin):
     parent_page_types = ['core.Main']
     subpage_types = ['polls.Question', 'polls.FreeTextQuestion']
 
@@ -45,7 +41,9 @@ def create_polls_index_page(sender, instance, **kwargs):
         polls_index.save_revision().publish()
 
 
-class Question(TranslatablePageMixinNotRoutable, Page):
+class Question(TranslatablePageMixinNotRoutable, MoloPage):
+    parent_page_types = [
+        'polls.PollsIndexPage', 'core.SectionPage', 'core.ArticlePage']
     subpage_types = ['polls.Choice']
     short_name = models.TextField(
         null=True, blank=True,
@@ -123,6 +121,8 @@ Question.settings_panels = [
 
 
 class FreeTextQuestion(Question):
+    parent_page_types = [
+        'polls.PollsIndexPage', 'core.SectionPage', 'core.ArticlePage']
     subpage_types = []
     content_panels = Page.content_panels
     numerical = models.BooleanField(
@@ -142,7 +142,8 @@ class FreeTextQuestion(Question):
             user=user, question__id=self.get_main_language_page().id).exists())
 
 
-class Choice(TranslatablePageMixinNotRoutable, Page):
+class Choice(TranslatablePageMixinNotRoutable, MoloPage):
+    parent_page_types = ['polls.Question']
     subpage_types = []
     votes = models.IntegerField(default=0)
     choice_votes = models.ManyToManyField('ChoiceVote',
