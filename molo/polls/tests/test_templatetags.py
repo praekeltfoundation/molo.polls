@@ -20,6 +20,7 @@ class TemplateTagTestCase(BasePollsTestCase):
         self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
         question.save_revision().publish()
+        choice1.save_revision().publish()
 
         self.client.post(reverse(
             'add_translation', args=[question.id, 'fr']))

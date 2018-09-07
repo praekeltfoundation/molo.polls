@@ -29,9 +29,9 @@ Django setup::
 
 In your urls.py::
 
-   urlpatterns += patterns('',
+   urlpatterns += [
         url(r'^polls/', include('molo.polls.urls', namespace='molo.polls', app_name='molo.polls')),
-   )
+   ]
 
 In your main.html::
 

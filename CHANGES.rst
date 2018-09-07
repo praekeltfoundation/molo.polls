@@ -1,7 +1,46 @@
 CHANGE LOG
 ==========
 
-4.0.0-beta.1
+
+6.4.1
+-----
+- Add translation files to molo.core
+
+6.4.0
+-----
+- Add M&E Expert to polls entries permissions
+
+6.3.0
+-----
+- Replace Page with MoloPage proxy
+
+6.2.0
+-----
+- Support Python 3
+
+6.1.0
+-----
+- add support for Django 1.11
+
+6.0.0
+-----
+- Official Release of Polls 6.0.0
+- No longer supporting Django 1.9, see upgrade considerations
+  https://docs.djangoproject.com/en/2.0/releases/1.10/
+
+6.0.1-beta.1
+------------
+- Upgrade to Django 1.10, Molo 6
+
+6.0.0-beta.1
+------------
+- Upgrade to Django 1.10, Molo 6
+
+5.0.1
+-----
+- Pin molo core to >=5.0.0
+
+5.0.0
 -----
 - Added multi-site functionality for polls
 
