@@ -1,6 +1,11 @@
 CHANGE LOG
 ==========
 
+
+6.4.1
+-----
+- Add translation files to molo.core
+
 6.4.0
 -----
 - Add M&E Expert to polls entries permissions
