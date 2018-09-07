@@ -9,7 +9,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0004_add_core_translation_fields'),
+        ('core', '0005_auto_20180906_0915'),
         ('polls', '0004_add-polls-permissions-to-groups'),
     ]
 
