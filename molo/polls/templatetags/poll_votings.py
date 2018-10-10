@@ -20,7 +20,7 @@ def poll_page(context, pk=None):
     if page:
         questions = (
             Question.objects.child_of(page).filter(
-                languages__language__is_main_language=True).specific())
+                language__is_main_language=True).specific())
     else:
         questions = Question.objects.none()
 
@@ -40,7 +40,7 @@ def load_polls(context):
     if page:
         questions = (
             Question.objects.child_of(page).filter(
-                languages__language__is_main_language=True).specific())
+                language__is_main_language=True).specific())
     else:
         questions = Question.objects.none()
 
@@ -55,7 +55,7 @@ def poll_page_in_section(context, pk=None, page=None):
     if page:
         questions = (
             Question.objects.child_of(page).filter(
-                languages__language__is_main_language=True).specific())
+                language__is_main_language=True).specific())
     else:
         questions = Question.objects.none()
 
@@ -70,7 +70,7 @@ def load_choices_for_poll_page(context, question):
     page = question.get_main_language_page()
     locale = context.get('locale_code')
     qs = Choice.objects.child_of(page).filter(
-        languages__language__is_main_language=True)
+        language__is_main_language=True)
 
     if not locale:
         return qs
