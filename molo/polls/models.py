@@ -45,6 +45,12 @@ class Question(TranslatablePageMixinNotRoutable, MoloPage):
     parent_page_types = [
         'polls.PollsIndexPage', 'core.SectionPage', 'core.ArticlePage']
     subpage_types = ['polls.Choice']
+    language = models.ForeignKey('core.SiteLanguage',
+                                 blank=True,
+                                 null=True,
+                                 on_delete=models.SET_NULL,
+                                 )
+    translated_pages = models.ManyToManyField("self", blank=True)
     short_name = models.TextField(
         null=True, blank=True,
         help_text="The short name will replace the title when "
@@ -145,6 +151,12 @@ class FreeTextQuestion(Question):
 class Choice(TranslatablePageMixinNotRoutable, MoloPage):
     parent_page_types = ['polls.Question']
     subpage_types = []
+    language = models.ForeignKey('core.SiteLanguage',
+                                 blank=True,
+                                 null=True,
+                                 on_delete=models.SET_NULL,
+                                 )
+    translated_pages = models.ManyToManyField("self", blank=True)
     votes = models.IntegerField(default=0)
     choice_votes = models.ManyToManyField('ChoiceVote',
                                           related_name='choices',

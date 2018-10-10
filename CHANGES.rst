@@ -1,6 +1,18 @@
 CHANGE LOG
 ==========
 
+7.0.0
+-----
+- Upgrade to molo 7
+
+6.4.1
+-----
+- Add translation files to molo.core
+
+6.4.0
+-----
+- Add M&E Expert to polls entries permissions
+
 6.3.0
 -----
 - Replace Page with MoloPage proxy
