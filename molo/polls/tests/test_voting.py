@@ -228,7 +228,7 @@ class VotingTestCase(BasePollsTestCase):
 
     def test_numerical_text_vote_resubmission(self):
         question = FreeTextQuestion(
-            title='is this a test')
+            title='is this a test', language=self.english)
         self.polls_index.add_child(instance=question)
         question.save_revision().publish()
 

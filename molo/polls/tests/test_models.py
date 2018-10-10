@@ -22,7 +22,7 @@ class ModelsTestCase(BasePollsTestCase):
             extra_style_hints='purple'
         )
         self.assertEqual(SectionPage.objects.count(), 1)
-        question = Question(title='is this a test')
+        question = Question(title='is this a test', language=self.english)
         section.add_child(instance=question)
         question.save_revision().publish()
 
@@ -36,7 +36,7 @@ class ModelsTestCase(BasePollsTestCase):
         # make choices
         choice1 = Choice(title='yes')
         # make a question
-        question = Question(title='is this a test')
+        question = Question(title='is this a test', language=self.english)
         self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
         # make a vote
@@ -57,7 +57,9 @@ class ModelsTestCase(BasePollsTestCase):
         choice4 = Choice(title='definitely')
         choice5 = Choice(title='idk')
 
-        question = Question(title='is this a test', randomise_options=True)
+        question = Question(
+            title='is this a test', language=self.english,
+            randomise_options=True)
         self.polls_index.add_child(instance=question)
         question.add_child(instance=choice1)
         question.add_child(instance=choice2)
