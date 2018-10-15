@@ -98,6 +98,7 @@ class VotingTestCase(BasePollsTestCase):
             'molo.polls:results',
             kwargs={'poll_id': question.id}))
         self.assertEquals(response.status_code, 200)
+        print(response)
         self.assertContains(response, '1 vote')
 
     def test_show_results(self):
