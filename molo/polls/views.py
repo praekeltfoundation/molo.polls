@@ -48,7 +48,7 @@ def poll_results(request, poll_id):
 
     choices = []
     translated_choices = get_translation_for(qs, locale, request.site)
-    for x in range(len(qs)):
+    for x in range(len(qs) - 1):
         choices.append((translated_choices[x].specific, qs[x].specific))
 
     total_votes = sum(c.votes for c in qs)
