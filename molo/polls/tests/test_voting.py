@@ -92,8 +92,6 @@ class VotingTestCase(BasePollsTestCase):
         self.assertEquals(vote_count2, 1)
 
         response = client.get('/')
-        print("------------------------")
-        print(question.site)
         self.assertContains(response, 'You voted: yes no')
 
     def test_multiple_options(self):
