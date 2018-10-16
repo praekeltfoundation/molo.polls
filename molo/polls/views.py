@@ -52,7 +52,8 @@ def poll_results(request, poll_id):
         if x < len(translated_choices):
             choices.append((translated_choices[x].specific, qs[x].specific))
         else:
-            choices.append((translated_choices[x].specific))
+            # the default language's choice should be used
+            choices.append((qs[x].specific, qs[x].specific))
 
     total_votes = sum(c.votes for c in qs)
     choice_color = ['orange', 'purple', 'turq']

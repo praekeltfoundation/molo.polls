@@ -3,11 +3,15 @@ from django.core.urlresolvers import reverse
 
 from molo.polls.tests.base import BasePollsTestCase
 from molo.polls.models import (
+    Choice,
     Question,
     ChoiceVote,
     FreeTextQuestion,
     FreeTextVote,
 )
+
+from molo.core.models import SiteSettings
+from wagtail.wagtailcore.models import Site
 
 
 class VotingTestCase(BasePollsTestCase):
@@ -49,6 +53,48 @@ class VotingTestCase(BasePollsTestCase):
             'molo.polls:results',
             kwargs={'poll_id': question.id}))
         self.assertContains(response, '100%')
+
+    def test_multiple_options_with_translations(self):
+        '''
+        Test that voting does not return an error some an not all
+        choices are translated
+        '''
+        self.client.login(
+            username=self.superuser_name,
+            password=self.superuser_password
+        )
+        default_site = Site.objects.get(is_default_site=True)
+        setting = SiteSettings.objects.create(site=default_site)
+
+        setting.show_only_translated_pages = True
+        setting.save()
+        question = Question(title='is this a test', language=self.english,
+                            allow_multiple_choice=True, show_results=False)
+        self.polls_index.add_child(instance=question)
+        # translate the question
+        self.client.post(reverse(
+            'add_translation', args=[question.id, 'fr']))
+        question.save_revision().publish()
+        choice1 = self.make_choice(title='yes',
+                                   parent=question, language=self.english)
+        choice2 = self.make_choice(title='no', parent=question,
+                                   language=self.english)
+        client = Client()
+        client.login(username='superuser', password='pass')
+        response = self.client.get('/locale/fr/')
+        client.post(reverse('molo.polls:vote',
+                    kwargs={'question_id': question.id}),
+                    {'choice': [choice1.id, choice2.id]})
+
+        vote_count1 = ChoiceVote.objects.all()[0].choice.all()[0].votes
+        self.assertEquals(vote_count1, 1)
+        vote_count2 = ChoiceVote.objects.all()[0].choice.all()[1].votes
+        self.assertEquals(vote_count2, 1)
+
+        response = client.get('/')
+        print("------------------------")
+        print(question.site)
+        self.assertContains(response, 'You voted: yes no')
 
     def test_multiple_options(self):
         # make a question
