@@ -49,7 +49,10 @@ def poll_results(request, poll_id):
     choices = []
     translated_choices = get_translation_for(qs, locale, request.site)
     for x in range(len(qs)):
-        choices.append((translated_choices[x].specific, qs[x].specific))
+        if x < len(translated_choices):
+            choices.append((translated_choices[x].specific, qs[x].specific))
+        else:
+            choices.append((translated_choices[x].specific))
 
     total_votes = sum(c.votes for c in qs)
     choice_color = ['orange', 'purple', 'turq']
