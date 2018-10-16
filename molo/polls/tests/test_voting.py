@@ -63,8 +63,7 @@ class VotingTestCase(BasePollsTestCase):
             username=self.superuser_name,
             password=self.superuser_password
         )
-        default_site = Site.objects.get(is_default_site=True)
-        setting = SiteSettings.objects.create(site=default_site)
+        setting = SiteSettings.objects.create(site=self.main.get_site())
 
         setting.show_only_translated_pages = True
         setting.save()
