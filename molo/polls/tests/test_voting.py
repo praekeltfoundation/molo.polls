@@ -3,7 +3,6 @@ from django.core.urlresolvers import reverse
 
 from molo.polls.tests.base import BasePollsTestCase
 from molo.polls.models import (
-    Choice,
     Question,
     ChoiceVote,
     FreeTextQuestion,
@@ -11,7 +10,6 @@ from molo.polls.models import (
 )
 
 from molo.core.models import SiteSettings
-from wagtail.wagtailcore.models import Site
 
 
 class VotingTestCase(BasePollsTestCase):
@@ -80,6 +78,7 @@ class VotingTestCase(BasePollsTestCase):
                                    language=self.english)
         client = Client()
         client.login(username='superuser', password='pass')
+        # when the french site is requested the options should not show
         response = self.client.get('/locale/fr/')
         client.post(reverse('molo.polls:vote',
                     kwargs={'question_id': question.id}),
