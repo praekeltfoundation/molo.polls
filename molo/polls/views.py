@@ -47,13 +47,10 @@ def poll_results(request, poll_id):
     locale = get_locale_code(get_language_from_request(request))
 
     choices = []
-    translated_choices = get_translation_for(qs, locale, request.site)
-    for x in range(len(qs)):
-        if x < len(translated_choices):
-            choices.append((translated_choices[x].specific, qs[x].specific))
-        else:
-            # the default language's choice should be used
-            choices.append((qs[x].specific, qs[x].specific))
+    for c in qs:
+        translations = get_translation_for([c], locale, request.site)
+        if translations:
+            choices.append((translations[0].specific, c.specific))
 
     total_votes = sum(c.votes for c in qs)
     choice_color = ['orange', 'purple', 'turq']
