@@ -62,36 +62,38 @@ class VotingTestCase(BasePollsTestCase):
             password=self.superuser_password
         )
         setting = SiteSettings.objects.create(site=self.main.get_site())
-
         setting.show_only_translated_pages = True
         setting.save()
         question = Question(title='Is this a test', language=self.english,
                             allow_multiple_choice=True, show_results=True)
         self.polls_index.add_child(instance=question)
+        question.save_revision().publish()
         # translate the question
         self.client.post(reverse(
             'add_translation', args=[question.id, 'fr']))
-        question.save_revision().publish()
         choice1 = self.make_choice(title='choice 1',
                                    parent=question, language=self.english)
         choice2 = self.make_choice(title='choice 2', parent=question,
                                    language=self.english)
-        self.client.post(reverse(
-            'add_translation', args=[choice1.id, 'fr']))
-        choice2.save_revision().publish()
-        client = Client()
-        client.login(username='superuser', password='pass')
 
-        response = client.get('/')
+        response = self.client.get('/')
         self.assertContains(response, question.title)
         self.assertContains(response, choice1.title)
         self.assertContains(response, choice2.title)
-        response = client.get('/locale/fr/')
-        response = client.get('/')
-        print(response)
+
+        self.client.post(reverse(
+            'add_translation', args=[choice1.id, 'fr']))
+        fr_question = Question.objects.get(
+            title='French translation of Is this a test')
+        fr_question.save_revision().publish()
+        fr_choice = choice1.translated_pages.first()
+        fr_choice.save_revision().publish()
+        response = self.client.get('/locale/fr/')
+        response = self.client.get('/')
+
         # the french translation will only have the translated choice
-        self.assertContains(response, question.title)
-        self.assertContains(response, choice1.title)
+        self.assertContains(response, fr_question.title)
+        self.assertContains(response, fr_choice.title)
         self.assertNotContains(response, choice2.title)
 
     def test_multiple_options(self):
