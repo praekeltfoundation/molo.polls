@@ -54,7 +54,7 @@ class VotingTestCase(BasePollsTestCase):
 
     def test_multiple_options_with_translations(self):
         '''
-        Test that voting does not return an error some an not all
+        Test that voting does not return an error when some and not all
         choices are translated
         '''
         self.client.login(
@@ -65,32 +65,34 @@ class VotingTestCase(BasePollsTestCase):
 
         setting.show_only_translated_pages = True
         setting.save()
-        question = Question(title='is this a test', language=self.english,
-                            allow_multiple_choice=True, show_results=False)
+        question = Question(title='Is this a test', language=self.english,
+                            allow_multiple_choice=True, show_results=True)
         self.polls_index.add_child(instance=question)
         # translate the question
         self.client.post(reverse(
             'add_translation', args=[question.id, 'fr']))
         question.save_revision().publish()
-        choice1 = self.make_choice(title='yes',
+        choice1 = self.make_choice(title='choice 1',
                                    parent=question, language=self.english)
-        choice2 = self.make_choice(title='no', parent=question,
+        choice2 = self.make_choice(title='choice 2', parent=question,
                                    language=self.english)
+        self.client.post(reverse(
+            'add_translation', args=[choice1.id, 'fr']))
+        choice2.save_revision().publish()
         client = Client()
         client.login(username='superuser', password='pass')
-        # when the french site is requested the options should not show
-        response = self.client.get('/locale/fr/')
-        client.post(reverse('molo.polls:vote',
-                    kwargs={'question_id': question.id}),
-                    {'choice': [choice1.id, choice2.id]})
-
-        vote_count1 = ChoiceVote.objects.all()[0].choice.all()[0].votes
-        self.assertEquals(vote_count1, 1)
-        vote_count2 = ChoiceVote.objects.all()[0].choice.all()[1].votes
-        self.assertEquals(vote_count2, 1)
 
         response = client.get('/')
-        self.assertContains(response, 'You voted: yes, no')
+        self.assertContains(response, question.title)
+        self.assertContains(response, choice1.title)
+        self.assertContains(response, choice2.title)
+        response = client.get('/locale/fr/')
+        response = client.get('/')
+        print(response)
+        # the french translation will only have the translated choice
+        self.assertContains(response, question.title)
+        self.assertContains(response, choice1.title)
+        self.assertNotContains(response, choice2.title)
 
     def test_multiple_options(self):
         # make a question
