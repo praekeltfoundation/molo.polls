@@ -76,8 +76,6 @@ class VotingTestCase(BasePollsTestCase):
             'add_translation', args=[question.id, 'fr']))
         client.post(reverse(
             'add_translation', args=[choice1.id, 'fr']))
-        client.post(reverse(
-            'add_translation', args=[choice2.id, 'fr']))
         # make a vote
         client.post(reverse('molo.polls:vote',
                     kwargs={'question_id': question.id}),
@@ -92,7 +90,7 @@ class VotingTestCase(BasePollsTestCase):
         # test results in english
         self.assertContains(response, 'Your answers:')
         self.assertContains(response, choice1.title)
-        self.assertNotContains(response, choice2.title)
+        self.assertContains(response, choice2.title)
 
         # view the results in french
         response = client.get('/locale/fr/')
@@ -100,9 +98,10 @@ class VotingTestCase(BasePollsTestCase):
             'molo.polls:results',
             kwargs={'poll_id': question.id}))
         # none of the choices show as they are not translated
-        print(response)
-        self.assertNotContains(response, 'You voted: choice 1, choice 2')
-        self.assertContains(response, 'You voted: choice 1')
+        # test results in english
+        self.assertContains(response, 'Your answers:')
+        self.assertContains(response, choice1.title)
+        self.assertNotContains(response, choice2.title)
 
     def test_multiple_options(self):
         # make a question
