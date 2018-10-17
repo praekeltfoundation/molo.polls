@@ -52,47 +52,58 @@ class VotingTestCase(BasePollsTestCase):
             kwargs={'poll_id': question.id}))
         self.assertContains(response, '100%')
 
-    def test_multiple_options_with_translations(self):
+    def test_multiple_options_translated(self):
         '''
         Test that voting does not return an error when some and not all
         choices are translated
         '''
-        self.client.login(
-            username=self.superuser_name,
-            password=self.superuser_password
-        )
-        setting = SiteSettings.objects.create(site=self.main.get_site())
-
-        setting.show_only_translated_pages = True
-        setting.save()
-        question = Question(title='Is this a test', language=self.english,
-                            allow_multiple_choice=True, show_results=True)
-        self.polls_index.add_child(instance=question)
-        # translate the question
-        self.client.post(reverse(
-            'add_translation', args=[question.id, 'fr']))
-        question.save_revision().publish()
-        choice1 = self.make_choice(title='choice 1',
-                                   parent=question, language=self.english)
-        choice2 = self.make_choice(title='choice 2', parent=question,
-                                   language=self.english)
-        self.client.post(reverse(
-            'add_translation', args=[choice1.id, 'fr']))
-        choice2.save_revision().publish()
         client = Client()
         client.login(username='superuser', password='pass')
+        setting = SiteSettings.objects.create(site=self.main.get_site())
+        setting.show_only_translated_pages = True
+        setting.save()
 
-        response = client.get('/')
-        self.assertContains(response, question.title)
-        self.assertContains(response, choice1.title)
-        self.assertContains(response, choice2.title)
-        response = client.get('/locale/fr/')
-        response = client.get('/')
+        question = Question(
+            title='is this a test',
+            allow_multiple_choice=True, show_results=True)
+        self.polls_index.add_child(instance=question)
+        question.save_revision().publish()
+        # make choices
+        choice1 = self.make_choice(title='choice 1', parent=question)
+        choice2 = self.make_choice(title='choice 2', parent=question)
+        # translate choice 1
+        client.post(reverse(
+            'add_translation', args=[question.id, 'fr']))
+        client.post(reverse(
+            'add_translation', args=[choice1.id, 'fr']))
+        client.post(reverse(
+            'add_translation', args=[choice2.id, 'fr']))
+        # make a vote
+        client.post(reverse('molo.polls:vote',
+                    kwargs={'question_id': question.id}),
+                    {'choice': [choice1.id, choice2.id]})
+        # should automatically create the poll vote
+        # test poll vote
+        vote_count1 = ChoiceVote.objects.all()[0].choice.all()[0].votes
+        self.assertEquals(vote_count1, 1)
+        response = client.get(reverse(
+            'molo.polls:results',
+            kwargs={'poll_id': question.id}))
+        # test results in english
         print(response)
-        # the french translation will only have the translated choice
-        self.assertContains(response, question.title)
+        self.assertContains(response, 'Your answers:')
         self.assertContains(response, choice1.title)
         self.assertNotContains(response, choice2.title)
+
+        # view the results in french
+        response = client.get('/locale/fr/')
+        response = client.get(reverse(
+            'molo.polls:results',
+            kwargs={'poll_id': question.id}))
+        # none of the choices show as they are not translated
+        print(response)
+        self.assertNotContains(response, 'You voted: choice 1, choice 2')
+        self.assertContains(response, 'You voted: choice 1')
 
     def test_multiple_options(self):
         # make a question
