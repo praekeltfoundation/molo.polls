@@ -95,6 +95,18 @@ class VotingTestCase(BasePollsTestCase):
         self.assertContains(response, fr_choice.title)
         self.assertNotContains(response, choice2.title)
 
+        # vote for the translated option
+        self.client.post(reverse('molo.polls:vote',
+                         kwargs={'question_id': question.id}),
+                         {'choice': [choice1.id, choice2.id]})
+        response = self.client.get(reverse(
+            'molo.polls:results',
+            kwargs={'poll_id': question.id}))
+
+        self.assertContains(response, fr_choice.title)
+        # ensure that the untranslated choice is not displaying
+        self.assertNotContains(response, choice2.title)
+
     def test_multiple_options(self):
         # make a question
         question = Question(
