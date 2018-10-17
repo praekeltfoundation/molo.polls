@@ -80,8 +80,7 @@ class VotingTestCase(BasePollsTestCase):
         client.post(reverse('molo.polls:vote',
                     kwargs={'question_id': question.id}),
                     {'choice': [choice1.id, choice2.id]})
-        # should automatically create the poll vote
-        # test poll vote
+
         vote_count1 = ChoiceVote.objects.all()[0].choice.all()[0].votes
         self.assertEquals(vote_count1, 1)
         response = client.get(reverse(
