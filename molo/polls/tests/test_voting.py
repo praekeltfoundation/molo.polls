@@ -67,7 +67,7 @@ class VotingTestCase(BasePollsTestCase):
             allow_multiple_choice=True, show_results=True)
         self.polls_index.add_child(instance=question)
         question.save_revision().publish()
-        # translate the question
+
         self.client.post(reverse(
             'add_translation', args=[question.id, 'fr']))
         choice1 = self.make_choice(title='choice 1',
