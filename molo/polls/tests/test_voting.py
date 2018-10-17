@@ -90,7 +90,6 @@ class VotingTestCase(BasePollsTestCase):
             'molo.polls:results',
             kwargs={'poll_id': question.id}))
         # test results in english
-        print(response)
         self.assertContains(response, 'Your answers:')
         self.assertContains(response, choice1.title)
         self.assertNotContains(response, choice2.title)
