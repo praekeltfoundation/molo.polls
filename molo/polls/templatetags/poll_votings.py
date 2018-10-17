@@ -43,7 +43,6 @@ def load_polls(context):
                 language__is_main_language=True).specific())
     else:
         questions = Question.objects.none()
-
     return get_pages(context, questions, locale_code)
 
 
