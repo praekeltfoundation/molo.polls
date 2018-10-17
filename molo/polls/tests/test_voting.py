@@ -52,20 +52,20 @@ class VotingTestCase(BasePollsTestCase):
             kwargs={'poll_id': question.id}))
         self.assertContains(response, '100%')
 
-    def test_multiple_options_with_translations(self):
+    def test_show_results_with_translations(self):
         '''
         Test that voting does not return an error when some and not all
         choices are translated
         '''
-        self.client.login(
-            username=self.superuser_name,
-            password=self.superuser_password
-        )
+        client = Client()
+        client.login(username='superuser', password='pass')
         setting = SiteSettings.objects.create(site=self.main.get_site())
         setting.show_only_translated_pages = True
         setting.save()
-        question = Question(title='Is this a test', language=self.english,
-                            allow_multiple_choice=True, show_results=True)
+
+        question = Question(
+            title='is this a test',
+            allow_multiple_choice=True, show_results=True)
         self.polls_index.add_child(instance=question)
         question.save_revision().publish()
         # translate the question
