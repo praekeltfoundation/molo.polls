@@ -54,8 +54,8 @@ class VotingTestCase(BasePollsTestCase):
 
     def test_show_results_with_translated_choices(self):
         '''
-        Test that voting does not return an error when some and not all
-        choices are translated
+        Test that only the translated choices are shown when
+        show_only_translated_pages is true
         '''
         self.client.login(username='superuser', password='pass')
         setting = SiteSettings.objects.create(site=self.main.get_site())
