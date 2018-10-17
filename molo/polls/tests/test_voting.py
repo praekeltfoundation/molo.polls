@@ -57,8 +57,7 @@ class VotingTestCase(BasePollsTestCase):
         Test that voting does not return an error when some and not all
         choices are translated
         '''
-        client = Client()
-        client.login(username='superuser', password='pass')
+        self.client.login(username='superuser', password='pass')
         setting = SiteSettings.objects.create(site=self.main.get_site())
         setting.show_only_translated_pages = True
         setting.save()
@@ -84,7 +83,7 @@ class VotingTestCase(BasePollsTestCase):
         self.client.post(reverse(
             'add_translation', args=[choice1.id, 'fr']))
         fr_question = Question.objects.get(
-            title='French translation of Is this a test')
+            title='French translation of is this a test')
         fr_question.save_revision().publish()
         fr_choice = choice1.translated_pages.first()
         fr_choice.save_revision().publish()
