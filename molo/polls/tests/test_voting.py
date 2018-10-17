@@ -52,7 +52,7 @@ class VotingTestCase(BasePollsTestCase):
             kwargs={'poll_id': question.id}))
         self.assertContains(response, '100%')
 
-    def test_show_results_with_translations(self):
+    def test_show_results_with_translated_choices(self):
         '''
         Test that voting does not return an error when some and not all
         choices are translated
