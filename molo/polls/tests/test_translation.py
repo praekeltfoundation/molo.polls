@@ -18,7 +18,7 @@ class TranslationTestCase(BasePollsTestCase):
             password=self.superuser_password
         )
 
-        question = Question(title='is this a test')
+        question = Question(title='is this a test', language=self.english)
         self.polls_index.add_child(instance=question)
         question.save_revision().publish()
         self.client.post(reverse(
@@ -39,10 +39,10 @@ class TranslationTestCase(BasePollsTestCase):
             password=self.superuser_password
         )
 
-        question = Question(title='is this a test')
+        question = Question(title='is this a test', language=self.english)
         self.polls_index.add_child(instance=question)
         question.save_revision().publish()
-        choice1 = self.make_choice(parent=question)
+        choice1 = self.make_choice(parent=question, language=self.english)
         self.client.post(reverse(
             'add_translation', args=[choice1.id, 'fr']))
         page = Choice.objects.get(
@@ -51,7 +51,6 @@ class TranslationTestCase(BasePollsTestCase):
 
         response = self.client.get(reverse(
             'wagtailadmin_explore', args=[question.id]))
-
         self.assertContains(response,
                             '<a href="/admin/pages/%s/edit/"'
                             % page.id)
@@ -62,10 +61,10 @@ class TranslationTestCase(BasePollsTestCase):
             password=self.superuser_password
         )
 
-        question = Question(title='is this a test')
+        question = Question(title='is this a test', language=self.english)
         self.polls_index.add_child(instance=question)
         question.save_revision().publish()
-        choice1 = self.make_choice(parent=question)
+        choice1 = self.make_choice(parent=question, language=self.english)
         self.client.post(reverse(
             'add_translation', args=[choice1.id, 'fr']))
         page = Choice.objects.get(
@@ -85,10 +84,10 @@ class TranslationTestCase(BasePollsTestCase):
             password=self.superuser_password
         )
 
-        question = Question(title='is this a test')
+        question = Question(title='is this a test', language=self.english)
         self.polls_index.add_child(instance=question)
         question.save_revision().publish()
-        choice1 = self.make_choice(parent=question)
+        choice1 = self.make_choice(parent=question, language=self.english)
         self.client.post(reverse(
             'add_translation', args=[choice1.id, 'fr']))
         page = Choice.objects.get(

@@ -7,6 +7,7 @@ from django.views import generic
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 from molo.core.utils import get_locale_code
+from molo.core.models import get_translation_for
 from molo.polls.forms import TextVoteForm, VoteForm, NumericalTextVoteForm
 from molo.polls.models import (
     Choice, Question, FreeTextVote, ChoiceVote, FreeTextQuestion)
@@ -42,10 +43,15 @@ def poll_results(request, poll_id):
     question = get_object_or_404(Question, pk=poll_id)
     page = question.get_main_language_page()
     qs = Choice.objects.live().child_of(page).filter(
-        languages__language__is_main_language=True)
+        language__is_main_language=True)
     locale = get_locale_code(get_language_from_request(request))
-    choices = [(a.get_translation_for(locale, request.site) or a, a)
-               for a in qs]
+
+    choices = []
+    for c in qs:
+        translations = get_translation_for([c], locale, request.site)
+        if translations:
+            choices.append((translations[0].specific, c.specific))
+
     total_votes = sum(c.votes for c in qs)
     choice_color = ['orange', 'purple', 'turq']
     index = 0
