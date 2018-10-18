@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+7.0.1
+-----
+- Fix bug in polls choice translations
+
 7.0.0
 -----
 - Upgrade to molo 7
