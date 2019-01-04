@@ -17,7 +17,6 @@ setup(name='molo.polls',
       description=('A molo module that provides the ability to run polls.'),
       long_description=readme,
       classifiers=[
-          "Programming Language :: Python :: 2.7",
           "Programming Language :: Python :: 3.6",
           "Framework :: Django",
           "Topic :: Internet :: WWW/HTTP",
