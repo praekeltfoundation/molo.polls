@@ -1,5 +1,9 @@
 CHANGE LOG
 ==========
+8.0.0
+-----
+- Upgrade to wagtails 2
+- Drop support for python2
 
 7.0.1
 -----
