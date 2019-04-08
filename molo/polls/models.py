@@ -2,8 +2,8 @@ from django.db import models
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
-from wagtail.wagtailcore.models import Page
-from wagtail.wagtailadmin.edit_handlers import (
+from wagtail.core.models import Page
+from wagtail.admin.edit_handlers import (
     FieldPanel, MultiFieldPanel, FieldRowPanel,
 )
 
@@ -12,14 +12,13 @@ from molo.core.models import (
     Main, ArticlePage, SectionPage, TranslatablePageMixinNotRoutable,
     PreventDeleteMixin, index_pages_after_copy,
 )
-from molo.core.molo_wagtail_models import MoloPage
 
 
 SectionPage.subpage_types += ['polls.Question', 'polls.FreeTextQuestion']
 ArticlePage.subpage_types += ['polls.Question', 'polls.FreeTextQuestion']
 
 
-class PollsIndexPage(MoloPage, PreventDeleteMixin):
+class PollsIndexPage(Page, PreventDeleteMixin):
     parent_page_types = ['core.Main']
     subpage_types = ['polls.Question', 'polls.FreeTextQuestion']
 
@@ -41,7 +40,7 @@ def create_polls_index_page(sender, instance, **kwargs):
         polls_index.save_revision().publish()
 
 
-class Question(TranslatablePageMixinNotRoutable, MoloPage):
+class Question(TranslatablePageMixinNotRoutable, Page):
     parent_page_types = [
         'polls.PollsIndexPage', 'core.SectionPage', 'core.ArticlePage']
     subpage_types = ['polls.Choice']
@@ -70,12 +69,12 @@ class Question(TranslatablePageMixinNotRoutable, MoloPage):
     randomise_options = models.BooleanField(
         default=False,
         help_text=_(
-            "Randomising the options allows the options to be shown" +
+            "Randomising the options allows the options to be shown"
             " in a different order each time the page is displayed."))
     result_as_percentage = models.BooleanField(
         default=True,
         help_text=_(
-            "If not checked, the results will be shown as a total" +
+            "If not checked, the results will be shown as a total"
             " instead of a percentage.")
     )
     allow_multiple_choice = models.BooleanField(
@@ -148,7 +147,7 @@ class FreeTextQuestion(Question):
             user=user, question__id=self.get_main_language_page().id).exists())
 
 
-class Choice(TranslatablePageMixinNotRoutable, MoloPage):
+class Choice(TranslatablePageMixinNotRoutable, Page):
     parent_page_types = ['polls.Question']
     subpage_types = []
     language = models.ForeignKey('core.SiteLanguage',
