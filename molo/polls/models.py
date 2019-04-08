@@ -12,14 +12,13 @@ from molo.core.models import (
     Main, ArticlePage, SectionPage, TranslatablePageMixinNotRoutable,
     PreventDeleteMixin, index_pages_after_copy,
 )
-from molo.core.molo_wagtail_models import MoloPage
 
 
 SectionPage.subpage_types += ['polls.Question', 'polls.FreeTextQuestion']
 ArticlePage.subpage_types += ['polls.Question', 'polls.FreeTextQuestion']
 
 
-class PollsIndexPage(MoloPage, PreventDeleteMixin):
+class PollsIndexPage(Page, PreventDeleteMixin):
     parent_page_types = ['core.Main']
     subpage_types = ['polls.Question', 'polls.FreeTextQuestion']
 
@@ -41,7 +40,7 @@ def create_polls_index_page(sender, instance, **kwargs):
         polls_index.save_revision().publish()
 
 
-class Question(TranslatablePageMixinNotRoutable, MoloPage):
+class Question(TranslatablePageMixinNotRoutable, Page):
     parent_page_types = [
         'polls.PollsIndexPage', 'core.SectionPage', 'core.ArticlePage']
     subpage_types = ['polls.Choice']
@@ -148,7 +147,7 @@ class FreeTextQuestion(Question):
             user=user, question__id=self.get_main_language_page().id).exists())
 
 
-class Choice(TranslatablePageMixinNotRoutable, MoloPage):
+class Choice(TranslatablePageMixinNotRoutable, Page):
     parent_page_types = ['polls.Question']
     subpage_types = []
     language = models.ForeignKey('core.SiteLanguage',
