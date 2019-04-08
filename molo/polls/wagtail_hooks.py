@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from molo.polls.admin import QuestionsModelAdmin
 from molo.polls.admin_views import QuestionResultsAdminView
-from wagtail.wagtailcore import hooks
+from wagtail.core import hooks
 from wagtail.contrib.modeladmin.options import modeladmin_register
 from django.contrib.auth.models import User
 
