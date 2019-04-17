@@ -28,6 +28,15 @@ class PollsIndexPage(Page, PreventDeleteMixin):
         PollsIndexPage.objects.child_of(main).delete()
         super(PollsIndexPage, self).copy(*args, **kwargs)
 
+    def get_site(self):
+        try:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.get(
+                    site_name__icontains='main')
+        except Exception:
+            return self.get_ancestors().filter(
+                depth=2).first().sites_rooted_here.all().first() or None
+
 
 @receiver(index_pages_after_copy, sender=Main)
 def create_polls_index_page(sender, instance, **kwargs):
