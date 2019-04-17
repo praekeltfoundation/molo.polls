@@ -1,6 +1,10 @@
 CHANGE LOG
 ==========
 
+8.2.0
+-----
+- Add get_site to index page
+
 8.1.0
 -----
 - Remove MoloPage
