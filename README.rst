@@ -16,6 +16,11 @@ Molo polls
 
 A molo module that provides the ability to run polls and surveys.
 
+
+Note:
+This package has since been deprecated in favour of `molo.forms` https://github.com/praekeltfoundation/molo.forms
+
+
 Installation::
 
    pip install molo.polls
